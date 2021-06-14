@@ -9,6 +9,7 @@ import yaml
 
 config = yaml.safe_load(open(os.path.join(sys.path[0], "config.yml")))
 image_number = 0
+image_list = []
 
 def set_camera_options(camera):
     # Set camera resolution.
@@ -43,6 +44,10 @@ def set_camera_options(camera):
 
     return camera
 
+def add_timestamp():
+    for image in image_list:
+        print ("add timestamp: " + image)
+        os.system('convert ' + str(dir_path) + image + '  -pointsize 42 -fill white -annotate +100+100 %[exif:DateTimeOriginal] ' + str(dir_path) + image)
 
 def capture_image():
     try:
@@ -58,16 +63,20 @@ def capture_image():
         set_camera_options(camera)
 
         # Capture a picture.
-        camera.capture(str(dir_path) + '/'+ datetime.now().strftime('%Y-%m-%d - %H:%M:%S') +'.jpg')
+        image_name = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '.jpg'
+        camera.capture(str(dir_path) + image_name)
         camera.close()
-
+        image_list.append(image_name)
+        print(image_name)
+       
         if (image_number < (config['total_images'] - 1)):
             image_number += 1
         else:
             print ('\nTime-lapse capture complete!\n')
             # TODO: This doesn't pop user into the except block below :(.
+            if config['add_timestamp']:
+                add_timestamp()
             sys.exit()
-
     except (KeyboardInterrupt):
         print ("\nTime-lapse capture cancelled.\n")
     except (SystemExit):
@@ -78,6 +87,14 @@ dir_path = (str(config['dir_path']))
 
 # Print where the files will be saved
 print("\nFiles will be saved in: " + str(dir_path) + "\n")
-
 # Kick off the capture process.
 capture_image()
+
+if config['create_gif']:
+    print ('\nCreating animated gif.\n')
+    os.system('convert -delay 10 -loop 0 ' + dir + '/image*.jpg ' + dir + '-timelapse.gif')  # noqa
+
+# Create a video (Requires avconv - which is basically ffmpeg).
+if config['create_video']:
+    print ('\nCreating video.\n')
+    os.system('avconv -framerate 20 -i ' + dir + '/image%08d.jpg -vf format=yuv420p ' + dir + '/timelapse.mp4')  # noqa

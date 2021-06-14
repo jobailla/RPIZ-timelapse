@@ -19,6 +19,15 @@ interval: 1
 # Advanced settings #
 #####################
 
+# Whether to create an animated gif after capturing the time-lapse images.
+create_gif: False
+
+# Whether to create an video after capturing the time-lapse images.
+create_video: False
+
+# Add date and hour for each images
+add_timestamp: True
+
 # ISO value. 0 = auto, 60-800 for manual ISO.
 iso: 0
 
