@@ -5,15 +5,15 @@
 
 # Image resolution Set to empty object (`{ }`) to use default resolution.
 resolution: { 
-  width: 1920,
-  height: 1080
+  width: 2560,
+  height: 1440
 }
 
 # The number of images to capture.
-total_images: 3
+total_images: 1
 
 # The interval between captures (in seconds).
-interval: 1
+interval: 0
 
 #####################
 # Advanced settings #
