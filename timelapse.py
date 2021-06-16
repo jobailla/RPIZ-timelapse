@@ -11,6 +11,11 @@ config = yaml.safe_load(open(os.path.join(sys.path[0], "config.yml")))
 image_number = 0
 image_list = []
 
+dir_path = (str(config['dir_path']))
+cloud_dir = (str(config['cloud_dir']))
+cloud_name = (str(config['cloud_name']))
+
+
 def set_camera_options(camera):
     # Set camera resolution.
     if config['resolution']:
@@ -47,9 +52,13 @@ def set_camera_options(camera):
 def add_timestamp():
     for image in image_list:
         t = image.split("-")
-        timestamp = t[2] + '\/' + t[1] + '\/' + t[0] + '\ ' + t[3] + '\:' + t[4] + '\:' + t[5].strip(".jpg")
+        timestamp = t[2] + '\/' + t[1] + '\/' + t[0] + '\ ' + t[3] + '\:' + t[4] + '\:' + t[5]
         print ("add timestamp: " + image)
-        os.system('convert ' + str(dir_path) + image + '  -pointsize 42 -fill white -annotate +100+100 ' + timestamp + ' ' + str(dir_path) + image)
+        os.system('convert ' + (dir_path + image + '  -pointsize 42 -fill white -annotate +100+100 ' + timestamp + ' ' + str(dir_path) + image))
+
+def sync_cloud():
+    print("\nuploading on " + str(cloud_name) + "...")
+    os.system('rclone copy ' + str(dir_path) + ' ' + str(cloud_name) + ':' + str(cloud_dir))
 
 def capture_image():
     try:
@@ -65,7 +74,7 @@ def capture_image():
         set_camera_options(camera)
 
         # Capture a picture.
-        image_name = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '.jpg'
+        image_name = datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f') + '.jpg'
         camera.capture(str(dir_path) + image_name)
         camera.close()
         image_list.append(image_name)
@@ -78,14 +87,15 @@ def capture_image():
             # TODO: This doesn't pop user into the except block below :(.
             if config['add_timestamp']:
                 add_timestamp()
+            # sync cloud
+            if config['upload_cloud']:
+                sync_cloud()
             sys.exit()
     except (KeyboardInterrupt):
         print ("\nTime-lapse capture cancelled.\n")
     except (SystemExit):
         print ("\nTime-lapse capture stopped.\n")
 
-#Initialize the path for files to be saved
-dir_path = (str(config['dir_path']))
 
 # Print where the files will be saved
 print("\nFiles will be saved in: " + str(dir_path) + "\n")

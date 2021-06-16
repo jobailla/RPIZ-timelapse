@@ -28,6 +28,11 @@ create_video: False
 # Add date and hour for each images
 add_timestamp: True
 
+# Setup auto upload pictures on cloud (need rclone)
+upload_cloud: False
+cloud_name: onedrive
+cloud_dir: /Timelapse/TimelapsePictures
+
 # ISO value. 0 = auto, 60-800 for manual ISO.
 iso: 0
 
