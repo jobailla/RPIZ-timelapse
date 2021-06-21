@@ -11,6 +11,7 @@ mkdir /home/pi/Pictures
 # Witty Pi
 sudo su
 echo "dtoverlay=w1-gpio,gpiopin=18" >> /boot/config.txt
+exit
 cd /home/pi
 wget https://project-downloads.drogon.net/wiringpi-latest.deb
 sudo dpkg -i wiringpi-latest.deb
@@ -18,9 +19,9 @@ wget http://www.uugear.com/repo/WittyPi2/installWittyPi.sh
 sudo sh installWittyPi.sh
 rm wiringpi-latest.deb
 mv installWittyPi.sh wittyPi
-alias timelapse="python3 /home/pi/RPIZ-timelapse/timelapse.py"
-alias witty="sudo /home/pi/wittyPi/wittyPi.sh"
-alias test="python3 /home/pi/RPIZ-timelapse/test_camera.py"
+echo "alias timelapse=\"python3 /home/pi/RPIZ-timelapse/timelapse.py\"" >> .bashrc
+echo "alias witty=\"sudo /home/pi/wittyPi/wittyPi.sh\"" >> .bashrc
+echo "alias test=\"python3 /home/pi/RPIZ-timelapse/test_camera.py\"" >> .bashrc
 # activate camera
 echo -e "\e[33mActivating Camera... (raspi-config)\e[0m"
 raspi-config nonint do_camera 0
@@ -38,6 +39,7 @@ mkdir /home/pi/logs
 # ask for reboot
 read -p "Reboot Now (needed to restart wifi settings) ? (y/n) " -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
+    echo -e "\n"
 then
     reboot
 fi
