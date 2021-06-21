@@ -25,7 +25,8 @@ then
 fi
 # set crontab
 echo -e "\e[33mAdd crontab... \e[0m"
-( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot cd RPIZ-timelapse && sudo python timelapse.py &") | sort - | uniq - | crontab - -u pi
+mkdir /home/pi/logs
+( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot sudo sh /home/pi/RPIZ-timelapse/scripts/start.sh > /home/pi/logs/log.txt 2>&1") | sort - | uniq - | crontab - -u pi
 # ask for reboot
 read -p "Reboot Now (needed to restart wifi settings) ? (y/n)" -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
