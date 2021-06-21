@@ -54,7 +54,7 @@ def add_timestamp():
         t = image.split("-")
         timestamp = t[2] + '\/' + t[1] + '\/' + t[0] + '\ ' + t[3] + '\:' + t[4] + '\:' + t[5]
         print ("add timestamp: " + image)
-        os.system('convert ' + (dir_path + image + '  -pointsize 42 -fill white -annotate +100+100 ' + timestamp + ' ' + str(dir_path) + image))
+        os.system('convert ' + (dir_path + image + '  -pointsize 42 -fill yellow -annotate +100+100 ' + timestamp + ' ' + str(dir_path) + image))
 
 def sync_cloud():
     print("\nuploading on " + str(cloud_name) + "...")

@@ -26,7 +26,7 @@ create_gif: False
 create_video: False
 
 # Add date and hour for each images
-add_timestamp: True
+add_timestamp: False
 
 # Setup auto upload pictures on cloud (need rclone)
 upload_cloud: False
