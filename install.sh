@@ -4,25 +4,24 @@ sudo apt-get update -y
 echo -e "\e[33mInstalling Dependencies... \e[0m"
 sudo apt-get install -y git vim dialog python-picamera python-yaml python3-pip
 read -p "Do you want install optionials dependencies ? (proftpd, imagemagick, rclone) ? (y/n) " yn
-while true; do
-	case $yn in
-		[Yy]* ) cmd=(dialog --separate-output --checklist "Select options:" 22 76 16)
+case $yn in
+	[Yy]* ) cmd=(dialog --separate-output --checklist "Select options:" 22 76 16)
 		options=(1 "proftpd (ftp server)" off
-         	 	 2 "imagemagick" off
-         	 	 3 "rclone (cloud)" off)
+		2 "imagemagick" off
+		3 "rclone (cloud)" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		for choice in $choices
 		do
-    			case $choice in
-        			1) sudo apt-get install -y proftpd;;
-        			2) sudo apt-get install -y imagemagick;;
-        			3) sudo apt-get install -y rclone;;
-    			esac
+			clear
+			case $choice in
+				1) sudo apt-get install -y proftpd;;
+				2) sudo apt-get install -y imagemagick;;
+				3) sudo apt-get install -y rclone;;
+			esac
 		done;;
-		[Nn]* ) break;;
-        	* ) echo "Please answer yes or no.";;	
-    	esac
-done	
+	[Nn]* ) break;;
+	* ) echo "Please answer yes or no.";;	
+esac
 echo -e "\e[33mInstalling Python Dependencies... \e[0m"
 pip3 install pip3 install -r requirements.txt 
 # activate camera
