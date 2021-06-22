@@ -86,7 +86,7 @@ case $response in
 		echo -e "\e[33mSet alias...\e[0m"
 		echo "alias timelapse=\"sudo python3 /home/pi/RPIZ-timelapse/timelapse.py\"" >> .bashrc
 		echo "alias witty=\"sudo /home/pi/wittyPi/wittyPi.sh\"" >> .bashrc
-		echo "alias test=\"sudo python3 /home/pi/RPIZ-timelapse/test_camera.py\"" >> .bashrc
+		echo "alias rpicam=\"sudo python3 /home/pi/RPIZ-timelapse/test_camera.py\"" >> .bashrc
 	else
 		echo -e "\e[33mwittyPi folder already exists\e[0m"
 	fi;;
@@ -95,19 +95,19 @@ esac
 echo "current timezone:"
 sudo timedatectl | grep "Time zone:"
 read -p "Do you want to change the timezone ? (raspi-config) ? (y/n) " yn
-while true; do
+# while true; do
 	case $yn in
 		[Yy]* ) sudo raspi-config; break;;
-		[Nn]* ) break;;
+		[Nn]* ) echo "";;
         	* ) echo "Please answer yes or no.";;
     	esac
-done
+#done
 # ask for reboot
-read -p "Reboot Now (needed to restart wifi settings) ? (y/n) " yn
-while true; do
+read -p "Reboot Now ? (y/n) " yn
+#while true; do
 	case $yn in
-		[Yy]* ) sudo raspi-config; break;;
+		[Yy]* ) sudo reboot; break;;
 		[Nn]* ) exit;;
         	* ) echo "Please answer yes or no.";;
     	esac
-done
+#done
