@@ -2,7 +2,7 @@
 echo -e "\e[33mSystem Update... \e[0m"
 sudo apt-get update -y
 echo -e "\e[33mInstalling Dependencies... \e[0m"
-sudo apt-get install -y git vim python-picamera python-yaml python3-pip
+sudo apt-get install -y git vim dialog python-picamera python-yaml python3-pip
 read -p "Do you want install optionials dependencies ? (proftpd, imagemagick, rclone) ? (y/n) " yn
 while true; do
 	case $yn in
