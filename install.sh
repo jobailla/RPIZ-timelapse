@@ -1,8 +1,8 @@
 #! /bin/bash
 echo -e "\e[33mSystem Update... \e[0m"
-sudo apt-get update -y
+#sudo apt-get update -y
 echo -e "\e[33mInstalling Dependencies... \e[0m"
-sudo apt-get install -y git vim dialog python-picamera python-yaml python3-pip
+#sudo apt-get install -y git vim dialog python-picamera python-yaml python3-pip
 read -p "Do you want install optionials dependencies ? (proftpd, imagemagick, rclone) ? (y/n) " yn
 case $yn in
 	[Yy]* ) cmd=(dialog --separate-output --checklist "Select options:" 22 76 16)
@@ -19,7 +19,7 @@ case $yn in
 				3) sudo apt-get install -y rclone;;
 			esac
 		done;;
-	[Nn]* ) break;;
+	[Nn]* ) echo "";;
 	* ) echo "Please answer yes or no.";;	
 esac
 echo -e "\e[33mInstalling Python Dependencies... \e[0m"
