@@ -24,32 +24,32 @@ case $yn in
             done ;;
         [Nn]* ) echo "" ;;
         * ) echo "Please answer yes or no." ;;
-    esac
-    echo -e "\e[33mInstalling Python Dependencies... \e[0m"
-    sudo pip3 install pip3 install -r requirements.txt
-    # activate camera
-    echo -e "\e[33mActivating Camera... (raspi-config)\e[0m"
-    raspi-config nonint do_camera 0
-    # disactivate HDMI
-    echo -e "\e[33mDisactivating HDMI... (.zshrc, /usr/bin/tvservice -p to reactivate)\e[0m"
-    /usr/bin/tvservice -o
-    if ! (grep -R "/usr/bin/tvservice -o" /home/pi/.zshrc 2>/dev/null)
-    then
-        echo -e "\n/usr/bin/tvservice -o" >> /home/pi/.zshrc
-    fi
-    if [ ! -d "/home/pi/Pictures" ]
-    echo -e "\e[33mCreate Pictures directory...\e[0m"
-    then
-        mkdir /home/pi/Pictures
-    fi
-    # set crontab
-    echo -e "\e[33mAdd crontab... \e[0m"
-    mkdir /home/pi/logs
-    ( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot sudo sh /home/pi/RPIZ-timelapse/scripts/start.sh > /home/pi/logs/log.txt 2>&1") | sort - | uniq - | crontab - -u pi
-    # Witty Pi
-    dialog --title "Do you want install Witty Pi mini ?" \
-        --backtitle "Install Witty Pi" \
-        --yesno "\nWitty Pi is small extension board that can add realtime clock and power management
+esac
+echo -e "\e[33mInstalling Python Dependencies... \e[0m"
+sudo pip3 install pip3 install -r requirements.txt
+# activate camera
+echo -e "\e[33mActivating Camera... (raspi-config)\e[0m"
+raspi-config nonint do_camera 0
+# disactivate HDMI
+echo -e "\e[33mDisactivating HDMI... (.zshrc, /usr/bin/tvservice -p to reactivate)\e[0m"
+/usr/bin/tvservice -o
+if ! (grep -R "/usr/bin/tvservice -o" /home/pi/.zshrc 2>/dev/null)
+then
+	echo -e "\n/usr/bin/tvservice -o" >> /home/pi/.zshrc
+fi
+if [ ! -d "/home/pi/Pictures" ]
+	echo -e "\e[33mCreate Pictures directory...\e[0m"
+then
+	mkdir /home/pi/Pictures
+fi
+# set crontab
+echo -e "\e[33mAdd crontab... \e[0m"
+mkdir /home/pi/logs
+( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot sudo sh /home/pi/RPIZ-timelapse/scripts/start.sh > /home/pi/logs/log.txt 2>&1") | sort - | uniq - | crontab - -u pi
+# Witty Pi
+dialog --title "Do you want install Witty Pi mini ?" \
+--backtitle "Install Witty Pi" \
+--yesno "\nWitty Pi is small extension board that can add realtime clock and power management
 to your Raspberry Pi. After installing Witty Pi on your Raspberry Pi, you get some
 amazing new features:\n\n
 - Gracefully turn on/off Raspberry Pi with single tap on the switch.\n
@@ -68,11 +68,10 @@ these tasks in sequence:\n\n
 - Install wiringPi, if it is not installed yet\n
 - Install Witty Pi programs, if they are not installed yet\n
 - Remove fake-hwclock and disable ntpd daemon\n
-- Install Qt 5, if it is not installed yet (it is optional, and is for Jessie only)\n
-    " 26 120
-    response=$?
-    case $response in
-        1) clear && echo "Witty Pi mini will not install" ;;
+- Install Qt 5, if it is not installed yet (it is optional, and is for Jessie only)\n" 26 120
+response=$?
+case $response in
+	1) clear && echo "Witty Pi mini will not install" ;;
         255) clear && echo "[ESC] key pressed." ;;
         0)   clear
             if [ ! -d "/home/pi/wittyPi" ]
@@ -93,20 +92,21 @@ these tasks in sequence:\n\n
             else
                 echo -e "\e[33mwittyPi folder already exists\e[0m"
             fi ;;
-    esac
-    # Timezone
-    echo "current timezone:"
-    sudo timedatectl | grep "Time zone:"
-    read -rp "Do you want to change the timezone ? (raspi-config) ? (y/n) " yn
-    case $yn in
+esac
+# Timezone
+echo "current timezone:"
+sudo timedatectl | grep "Time zone:"
+read -rp "Do you want to change the timezone ? (raspi-config) ? (y/n) " yn
+case $yn in
         [Yy]* ) sudo raspi-config; break ;;
         [Nn]* ) echo "" ;;
         * ) echo "Please answer yes or no." ;;
-    esac
-    # ask for reboot
-    read -rp "Reboot Now ? (y/n) " yn
-    case $yn in
-        [Yy]* ) sudo reboot; break ;;
+esac
+# ask for reboot
+read -rp "Reboot Now ? (y/n) " yn
+case $yn in
+	[Yy]* ) sudo reboot; break ;;
         [Nn]* ) exit ;;
         * ) echo "Please answer yes or no." ;;
-    esac
+esac
+
