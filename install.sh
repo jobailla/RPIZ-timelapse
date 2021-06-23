@@ -1,8 +1,11 @@
 #! /bin/bash
 echo -e "\e[33mSystem Update... \e[0m"
 sudo apt-get update -y
+echo -e "\e[33mCurrent linux version:\e[0m"
+uname -a
+sudo apt-get install upgrade -y
 echo -e "\e[33mInstalling Dependencies... \e[0m"
-sudo apt-get install -y git vim dialog python-picamera python-yaml python3-pip
+sudo apt-get install -y git vim dialog python3-picamera python-yaml python3-pip
 read -p "Do you want install optionials dependencies ? (proftpd, imagemagick, rclone) ? (y/n) " yn
 case $yn in
 	[Yy]* ) cmd=(dialog --separate-output --checklist "Select options:" 22 76 16)
@@ -23,7 +26,7 @@ case $yn in
 	* ) echo "Please answer yes or no.";;	
 esac
 echo -e "\e[33mInstalling Python Dependencies... \e[0m"
-pip3 install pip3 install -r requirements.txt 
+sudo pip3 install pip3 install -r requirements.txt 
 # activate camera
 echo -e "\e[33mActivating Camera... (raspi-config)\e[0m"
 raspi-config nonint do_camera 0
@@ -95,19 +98,15 @@ esac
 echo "current timezone:"
 sudo timedatectl | grep "Time zone:"
 read -p "Do you want to change the timezone ? (raspi-config) ? (y/n) " yn
-# while true; do
 	case $yn in
 		[Yy]* ) sudo raspi-config; break;;
 		[Nn]* ) echo "";;
         	* ) echo "Please answer yes or no.";;
     	esac
-#done
 # ask for reboot
 read -p "Reboot Now ? (y/n) " yn
-#while true; do
 	case $yn in
 		[Yy]* ) sudo reboot; break;;
 		[Nn]* ) exit;;
         	* ) echo "Please answer yes or no.";;
     	esac
-#done
