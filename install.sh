@@ -1,4 +1,9 @@
 #! /bin/bash
+if [[ $SUDO_USER ]]
+then
+	echo -e "\e[31mPlease don't run this script with sudo\e[0m"
+	exit
+fi
 echo -e "\e[33mSystem Update... \e[0m"
 sudo apt-get update -y
 echo -e "\e[33mCurrent linux version:\e[0m"
