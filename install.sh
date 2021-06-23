@@ -72,10 +72,10 @@ these tasks in sequence:\n\n
 response=$?
 case $response in
 	1) clear && echo "Witty Pi mini will not install" ;;
-        255) clear && echo "[ESC] key pressed." ;;
-        0)   clear
-            if [ ! -d "/home/pi/wittyPi" ]
-            then
+	255) clear && echo "[ESC] key pressed." ;;
+	0) clear
+           if [ ! -d "/home/pi/wittyPi" ]
+           then
                 echo -e "\e[33mWitty Pi setup...\e[0m"
                 sudo echo "dtoverlay=w1-gpio,gpiopin=18" >> /boot/config.txt
                 cd /home/pi || exit
@@ -98,15 +98,15 @@ echo "current timezone:"
 sudo timedatectl | grep "Time zone:"
 read -rp "Do you want to change the timezone ? (raspi-config) ? (y/n) " yn
 case $yn in
-        [Yy]* ) sudo raspi-config; break ;;
-        [Nn]* ) echo "" ;;
-        * ) echo "Please answer yes or no." ;;
+	[Yy]* ) sudo raspi-config; break ;;
+	[Nn]* ) echo "" ;;
+	* ) echo "Please answer yes or no." ;;
 esac
 # ask for reboot
 read -rp "Reboot Now ? (y/n) " yn
 case $yn in
 	[Yy]* ) sudo reboot; break ;;
-        [Nn]* ) exit ;;
-        * ) echo "Please answer yes or no." ;;
+	[Nn]* ) exit ;;
+	* ) echo "Please answer yes or no." ;;
 esac
 
