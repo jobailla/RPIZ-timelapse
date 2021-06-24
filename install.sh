@@ -50,7 +50,7 @@ fi
 # set crontab
 echo -e "\e[33mAdd crontab... \e[0m"
 mkdir /home/pi/logs
-( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot sudo sh /home/pi/RPIZ-timelapse/scripts/start.sh > /home/pi/logs/log.txt 2>&1") | sort - | uniq - | crontab - -u pi
+( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot sudo sh /home/pi/RPIZ-timelapse/scripts/start.sh >> /home/pi/logs/log.txt 2>&1") | sort - | uniq - | crontab - -u pi
 # Witty Pi
 if [ ! -d "/home/pi/wittyPi" ]
 then
