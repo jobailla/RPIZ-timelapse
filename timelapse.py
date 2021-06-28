@@ -78,13 +78,12 @@ def capture_image():
         camera.capture(str(dir_path) + image_name)
         camera.close()
         image_list.append(image_name)
-        print(image_name)
+        print(image_name.replace('.jpg', ''))
        
         if (image_number < (config['total_images'] - 1)):
             image_number += 1
         else:
-            print ('\nTime-lapse capture complete!\n')
-            # TODO: This doesn't pop user into the except block below :(.
+#            print ('\nTime-lapse capture complete!\n')
             if config['add_timestamp']:
                 add_timestamp()
             # sync cloud
@@ -92,21 +91,24 @@ def capture_image():
                 sync_cloud()
             sys.exit()
     except (KeyboardInterrupt):
-        print ("\nTime-lapse capture cancelled.\n")
+#        print ("\nTime-lapse capture cancelled.\n")
+        sys.exit()
     except (SystemExit):
-        print ("\nTime-lapse capture stopped.\n")
+#        print ("\nTime-lapse capture stopped.\n")
+        sys.exit()
 
 
 # Print where the files will be saved
-print("\nFiles will be saved in: " + str(dir_path) + "\n")
+#print("\nFiles will be saved in: " + str(dir_path) + "\n")
 # Kick off the capture process.
+date = os.system('date')
 capture_image()
 
 if config['create_gif']:
     print ('\nCreating animated gif.\n')
-    os.system('convert -delay 10 -loop 0 ' + dir + '/image*.jpg ' + dir + '-timelapse.gif')  # noqa
+    os.system('convert -delay 10 -loop 0 ' + dir + '/image*.jpg ' + dir + '-timelapse.gif')
 
 # Create a video (Requires avconv - which is basically ffmpeg).
 if config['create_video']:
     print ('\nCreating video.\n')
-    os.system('avconv -framerate 20 -i ' + dir + '/image%08d.jpg -vf format=yuv420p ' + dir + '/timelapse.mp4')  # noqa
+    os.system('avconv -framerate 20 -i ' + dir + '/image%08d.jpg -vf format=yuv420p ' + dir + '/timelapse.mp4')
