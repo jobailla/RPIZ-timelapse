@@ -18,7 +18,7 @@ cloud_name = (str(config['cloud_name']))
 
 def getDateTime():
     dateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    print('\n\033[34m \033[4mCapture start:\033[24m  ', end = ' ')
+    print('\n\033[34m \033[4mTime:\t\t\033[24m ', end = ' ')
     print('\033[34m' + dateTime, end = '')
 
 def getUpTime():
