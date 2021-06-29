@@ -17,16 +17,50 @@ cloud_dir = (str(config['cloud_dir']))
 cloud_name = (str(config['cloud_name']))
 
 def getDateTime():
-    dateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout
-    print('\033[33m' + dateTime.read().decode(), end = '')
+    dateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    print('\n\033[34m \033[4mCapture start:\033[24m  ', end = ' ')
+    print('\033[34m' + dateTime, end = '')
 
 def getUpTime():
     upTime = subprocess.Popen('uptime -s', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     timeUp = os.popen("awk '{print $1}' /proc/uptime").readline()
     seconds = str(round(float(timeUp)))
+    print('\n\033[35m \033[4mRPI start:\033[24m      ', end = ' ')
     print('\033[35m' + upTime, end = '')
-    print(' uptime:\t  ' + str(timedelta(seconds = int(seconds))), end = '')
+    print(' uptime:\t  ' + str(timedelta(seconds = int(seconds))))
 
+def getSystemInfo():
+    #fileSystemInfo = subprocess.Popen('df / -h', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    cameraInfo = subprocess.Popen('vcgencmd get_camera', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    throttled = subprocess.Popen('vcgencmd get_throttled', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    temperature = subprocess.Popen('vcgencmd measure_temp', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+
+    throttledCode = throttled.split('=')[1].replace('\n', '')
+    print(' \033[36m' + throttledCode + ':', end = '')
+    if throttledCode == '0x0':
+        print(' \033[32mSystem stable')
+    elif throttledCode == '0x1':
+        print(' \033[31mUnder-voltage detected')
+    elif throttledCode == '0x2':
+        print(' \033[31mArm frequency capped')
+    elif throttledCode == '0x4':
+        print(' \033[31mCurrently throttled')
+    elif throttledCode == '0x8':
+        print(' \033[31mSoft temperature limit active')
+    elif throttledCode == '0x10000':
+        print(' \033[31mUnder-voltage has occurred')
+    elif throttledCode == '0x20000':
+        print(' \033[31mArm frequency capping has occurred')
+    elif throttledCode == '0x40000':
+        print(' \033[31mThrottling has occurred')
+    elif throttledCode == '0x80000':
+        print(' \033[31mSoft temperature limit has occurred')
+    else:
+        print(' \033[31mError')
+
+    print('\033[36m Camera: ' + cameraInfo, end = '')
+    print(' \033[36m' + temperature, end = '')
+    #print('\033[94m' + fileSystemInfo)
 
 def set_camera_options(camera):
     # Set camera resolution.
@@ -113,15 +147,14 @@ def capture_image():
         sys.exit()
 
 # Print where the files will be saved
-print("\033[36mFiles will be saved in: " + str(dir_path))
 print("\033[93m=====================================================")
-print('\n\033[35m \033[4mRPI start:\033[24m      ', end = ' ')
+#print("\033[36mFiles will be saved in: " + str(dir_path))
+getSystemInfo()
 getUpTime()
-print('\n\033[92m \033[4mCapture start:\033[24m  ', end = ' ')
 getDateTime()
 
 # Kick off the capture process.
-print('\033[34m \033[4mTake Picture' + ('s' if config['total_images'] > 1 else '') + ':\033[24m')
+print('\033[34m Take Picture' + ('s' if config['total_images'] > 1 else '') + ':')
 capture_image()
 
 
