@@ -92,10 +92,11 @@ def capture_image():
             # sync cloud
             if config['upload_cloud']:
                 sync_cloud()
-            print('\n\033[92m \033[4mSystem Shutdown:\033[24m', end = ' ')
-            getDateTime()
+            if config['auto_shutdown']:
+                print('\n\033[92m \033[4mSystem Shutdown:\033[24m', end = ' ')
+                getDateTime()
+                os.system('gpio -g mode 4 out')
             print("\033[93m=====================================================")
-            #os.system('gpio -g mode 4 out')
             sys.exit()
     except (KeyboardInterrupt):
         print ("\nTime-lapse capture cancelled.\n")

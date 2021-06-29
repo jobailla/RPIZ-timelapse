@@ -19,6 +19,8 @@ interval: 1
 # Advanced settings #
 #####################
 
+auto_shutdown: False
+
 # Whether to create an animated gif after capturing the time-lapse images.
 create_gif: False
 
