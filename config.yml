@@ -13,7 +13,7 @@ resolution: {
 total_images: 1
 
 # The interval between captures (in seconds).
-interval: 0
+interval: 1
 
 #####################
 # Advanced settings #

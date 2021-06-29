@@ -47,10 +47,6 @@ if [ ! -d "/home/pi/Pictures" ]
 then
 	mkdir /home/pi/Pictures
 fi
-# set crontab
-echo -e "\e[33mAdd crontab... \e[0m"
-mkdir /home/pi/logs
-( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot sudo sh /home/pi/RPIZ-timelapse/scripts/start.sh >> /home/pi/logs/log.txt 2>&1") | sort - | uniq - | crontab - -u pi
 # Witty Pi
 if [ ! -d "/home/pi/wittyPi" ]
 then
@@ -96,6 +92,10 @@ then
 else
 	echo -e "\e[33mwittyPi folder already exists\e[0m"
 fi
+# set extraTasks
+echo -e "\e[33mAdd witty extraTasks... \e[0m"
+mkdir /home/pi/logs
+echo "sudo python3 /home/pi/RPIZ-timelapse/timelapse.py >> /home/pi/logs/log.txt 2>&1" >> /home/pi/wittyPi/extraTasks.sh
 # Alias
 echo -e "\e[33mSet alias...\e[0m"
 echo "alias timelapse=\"sudo python3 /home/pi/RPIZ-timelapse/timelapse.py\"" >>  ~/.bashrc

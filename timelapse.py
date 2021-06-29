@@ -6,6 +6,7 @@ import threading
 from datetime import datetime
 from time import sleep
 import yaml
+import subprocess
 
 config = yaml.safe_load(open(os.path.join(sys.path[0], "config.yml")))
 image_number = 0
@@ -15,6 +16,9 @@ dir_path = (str(config['dir_path']))
 cloud_dir = (str(config['cloud_dir']))
 cloud_name = (str(config['cloud_name']))
 
+def getDateTime():
+    getDateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout
+    print('\033[33m' + getDateTime.read().decode(), end = '')
 
 def set_camera_options(camera):
     # Set camera resolution.
@@ -69,6 +73,7 @@ def capture_image():
         if (image_number < (config['total_images'] - 1)):
             thread = threading.Timer(config['interval'], capture_image).start()
 
+
         # Start up the camera.
         camera = PiCamera()
         set_camera_options(camera)
@@ -78,7 +83,7 @@ def capture_image():
         camera.capture(str(dir_path) + image_name)
         camera.close()
         image_list.append(image_name)
-        print(image_name.replace('.jpg', ''))
+        print('\t\t  ' + image_name.replace('.jpg', ''))
        
         if (image_number < (config['total_images'] - 1)):
             image_number += 1
@@ -89,19 +94,25 @@ def capture_image():
             # sync cloud
             if config['upload_cloud']:
                 sync_cloud()
+            print('\n\033[92m \033[4mSystem Shutdown:\033[24m', end = ' ')
+            getDateTime()
+            print("\033[93m=====================================================")
+            #os.system('gpio -g mode 4 out')
             sys.exit()
     except (KeyboardInterrupt):
-#        print ("\nTime-lapse capture cancelled.\n")
+        print ("\nTime-lapse capture cancelled.\n")
         sys.exit()
     except (SystemExit):
 #        print ("\nTime-lapse capture stopped.\n")
         sys.exit()
 
-
 # Print where the files will be saved
-#print("\nFiles will be saved in: " + str(dir_path) + "\n")
+print("\033[36mFiles will be saved in: " + str(dir_path))
+print("\033[93m=====================================================")
+print('\n\033[92m \033[4mCapture start:\033[24m  ', end = ' ')
+getDateTime()
 # Kick off the capture process.
-date = os.system('date')
+print('\033[34m \033[4mTake Picture' + ('s' if config['total_images'] > 1 else '') + ':\033[24m')
 capture_image()
 
 if config['create_gif']:
