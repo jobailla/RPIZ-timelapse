@@ -137,7 +137,6 @@ def capture_image():
             if config['auto_shutdown']:
                 print('\n\033[92m \033[4mSystem Shutdown:\033[24m', end = '')
                 getDateTime()
-                print("\033[93m=====================================================")
                 os.system('gpio -g mode 4 out')
             print("\033[93m=====================================================")
             sys.exit()
