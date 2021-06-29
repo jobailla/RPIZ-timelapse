@@ -3,7 +3,7 @@ import errno
 import os
 import sys
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import sleep
 import yaml
 import subprocess
@@ -17,8 +17,16 @@ cloud_dir = (str(config['cloud_dir']))
 cloud_name = (str(config['cloud_name']))
 
 def getDateTime():
-    getDateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout
-    print('\033[33m' + getDateTime.read().decode(), end = '')
+    dateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout
+    print('\033[33m' + dateTime.read().decode(), end = '')
+
+def getUpTime():
+    upTime = subprocess.Popen('uptime -s', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    timeUp = os.popen("awk '{print $1}' /proc/uptime").readline()
+    seconds = str(round(float(timeUp)))
+    print('\033[35m' + upTime, end = '')
+    print(' uptime:\t  ' + str(timedelta(seconds = int(seconds))), end = '')
+
 
 def set_camera_options(camera):
     # Set camera resolution.
@@ -78,7 +86,7 @@ def capture_image():
         set_camera_options(camera)
         
         # Capture a picture.
-        image_name = datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f') + '.jpg'
+        image_name = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '.jpg'
         camera.capture(str(dir_path) + image_name)
         camera.close()
         image_list.append(image_name)
@@ -107,6 +115,8 @@ def capture_image():
 # Print where the files will be saved
 print("\033[36mFiles will be saved in: " + str(dir_path))
 print("\033[93m=====================================================")
+print('\n\033[35m \033[4mRPI start:\033[24m      ', end = ' ')
+getUpTime()
 print('\n\033[92m \033[4mCapture start:\033[24m  ', end = ' ')
 getDateTime()
 
