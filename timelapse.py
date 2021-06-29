@@ -72,12 +72,11 @@ def capture_image():
         # picture is taken.
         if (image_number < (config['total_images'] - 1)):
             thread = threading.Timer(config['interval'], capture_image).start()
-
-
+        
         # Start up the camera.
         camera = PiCamera()
         set_camera_options(camera)
-
+        
         # Capture a picture.
         image_name = datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f') + '.jpg'
         camera.capture(str(dir_path) + image_name)
@@ -88,7 +87,6 @@ def capture_image():
         if (image_number < (config['total_images'] - 1)):
             image_number += 1
         else:
-#            print ('\nTime-lapse capture complete!\n')
             if config['add_timestamp']:
                 add_timestamp()
             # sync cloud
@@ -103,7 +101,6 @@ def capture_image():
         print ("\nTime-lapse capture cancelled.\n")
         sys.exit()
     except (SystemExit):
-#        print ("\nTime-lapse capture stopped.\n")
         sys.exit()
 
 # Print where the files will be saved
@@ -111,10 +108,13 @@ print("\033[36mFiles will be saved in: " + str(dir_path))
 print("\033[93m=====================================================")
 print('\n\033[92m \033[4mCapture start:\033[24m  ', end = ' ')
 getDateTime()
+
 # Kick off the capture process.
 print('\033[34m \033[4mTake Picture' + ('s' if config['total_images'] > 1 else '') + ':\033[24m')
 capture_image()
 
+
+# Create an animated gif (Requires ImageMagick).
 if config['create_gif']:
     print ('\nCreating animated gif.\n')
     os.system('convert -delay 10 -loop 0 ' + dir + '/image*.jpg ' + dir + '-timelapse.gif')
