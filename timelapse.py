@@ -64,7 +64,7 @@ def set_camera_options(camera):
 def add_timestamp():
     for image in image_list:
         t = image.split("-")
-        timestamp = t[2] + '\/' + t[1] + '\/' + t[0] + '\ ' + t[3] + '\:' + t[4] + '\:' + t[5]
+        timestamp = t[2] + '\/' + t[1] + '\/' + t[0] + '\ ' + t[3] + '\:' + t[4] + '\:' + t[5].strip('.jpg')
         print ("add timestamp: " + image)
         os.system('convert ' + (dir_path + image + '  -pointsize 42 -fill yellow -annotate +100+100 ' + timestamp + ' ' + str(dir_path) + image))
 
