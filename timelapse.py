@@ -18,24 +18,24 @@ cloud_name = (str(config['cloud_name']))
 
 def getDateTime():
     dateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    print('\n\033[39m \033[4mTime:\t\t\033[24m ', end = ' ')
+    print('\n\033[39m Time:\t\t ', end = ' ')
     print('\033[39m' + dateTime, end = '')
 
 def getUpTime():
     upTime = subprocess.Popen('uptime -s', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     timeUp = os.popen("awk '{print $1}' /proc/uptime").readline()
     seconds = str(round(float(timeUp)))
-    print('\n\033[35m \033[4mRPI start:\033[24m      ', end = ' ')
-    print('\033[35m' + upTime, end = '')
-    print(' uptime:\t  ' + str(timedelta(seconds = int(seconds))))
+    print('\n\033[95m RPI start:      ', end = ' ')
+    print('\033[95m' + upTime, end = '')
+    print(' Uptime:\t  ' + str(timedelta(seconds = int(seconds))))
 
 def getSystemInfo():
     cameraInfo = subprocess.Popen('vcgencmd get_camera', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     throttled = subprocess.Popen('vcgencmd get_throttled', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    temperature = subprocess.Popen('vcgencmd measure_temp', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-
+    temperature = 'Temperature:\t  ' + subprocess.Popen('vcgencmd measure_temp', shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
+    
     throttledCode = throttled.split('=')[1].replace('\n', '')
-    print(' \033[36m' + throttledCode + ':', end = '')
+    print(' \033[36m' + throttledCode + ':\t\t ', end = '')
     if throttledCode == '0x0':
         print(' \033[32mSystem stable')
     elif throttledCode == '0x1':
@@ -57,7 +57,7 @@ def getSystemInfo():
     else:
         print(' \033[31mError')
 
-    print('\033[36m Camera: ' + cameraInfo, end = '')
+    print('\033[36m Camera:\t  ' + cameraInfo, end = '')
     print(' \033[36m' + temperature, end = '')
 
 def set_camera_options(camera):
@@ -134,7 +134,7 @@ def capture_image():
             if config['upload_cloud']:
                 sync_cloud()
             if config['auto_shutdown']:
-                print('\n\033[92mSystem Shutdown...', end = '')
+                print('\n\033[33mSystem Shutdown...', end = '')
                 getDateTime()
                 os.system('gpio -g mode 4 out')
             print("\033[93m=====================================================")
@@ -151,7 +151,7 @@ getUpTime()
 getDateTime()
 
 # Kick off the capture process
-print('\033[34m Take Picture' + ('s' if config['total_images'] > 1 else '') + ':')
+print('\033[32m Take Picture' + ('s' if config['total_images'] > 1 else '') + ':')
 capture_image()
 
 
