@@ -30,7 +30,6 @@ def getUpTime():
     print(' uptime:\t  ' + str(timedelta(seconds = int(seconds))))
 
 def getSystemInfo():
-    #fileSystemInfo = subprocess.Popen('df / -h', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     cameraInfo = subprocess.Popen('vcgencmd get_camera', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     throttled = subprocess.Popen('vcgencmd get_throttled', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     temperature = subprocess.Popen('vcgencmd measure_temp', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
@@ -60,7 +59,6 @@ def getSystemInfo():
 
     print('\033[36m Camera: ' + cameraInfo, end = '')
     print(' \033[36m' + temperature, end = '')
-    #print('\033[94m' + fileSystemInfo)
 
 def set_camera_options(camera):
     # Set camera resolution.
@@ -102,6 +100,7 @@ def add_timestamp():
         print ("add timestamp: " + image)
         os.system('convert ' + (dir_path + image + '  -pointsize 42 -fill yellow -annotate +100+100 ' + timestamp + ' ' + str(dir_path) + image))
 
+# Upload picture(s) on cloud (Requires rclone)
 def sync_cloud():
     print("\nuploading on " + str(cloud_name) + "...")
     os.system('rclone copy ' + str(dir_path) + ' ' + str(cloud_name) + ':' + str(cloud_dir))
@@ -135,7 +134,7 @@ def capture_image():
             if config['upload_cloud']:
                 sync_cloud()
             if config['auto_shutdown']:
-                print('\n\033[92m \033[4mSystem Shutdown:\033[24m', end = '')
+                print('\n\033[92mSystem Shutdown...', end = '')
                 getDateTime()
                 os.system('gpio -g mode 4 out')
             print("\033[93m=====================================================")
@@ -146,24 +145,22 @@ def capture_image():
     except (SystemExit):
         sys.exit()
 
-# Print where the files will be saved
-print("\033[93m=====================================================")
-#print("\033[36mFiles will be saved in: " + str(dir_path))
+# Print logs
 getSystemInfo()
 getUpTime()
 getDateTime()
 
-# Kick off the capture process.
+# Kick off the capture process
 print('\033[34m Take Picture' + ('s' if config['total_images'] > 1 else '') + ':')
 capture_image()
 
 
-# Create an animated gif (Requires ImageMagick).
+# Create an animated gif (Requires ImageMagick)
 if config['create_gif']:
     print ('\nCreating animated gif.\n')
     os.system('convert -delay 10 -loop 0 ' + dir + '/image*.jpg ' + dir + '-timelapse.gif')
 
-# Create a video (Requires avconv - which is basically ffmpeg).
+# Create a video (Requires avconv)
 if config['create_video']:
     print ('\nCreating video.\n')
     os.system('avconv -framerate 20 -i ' + dir + '/image%08d.jpg -vf format=yuv420p ' + dir + '/timelapse.mp4')
