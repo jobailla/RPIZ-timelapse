@@ -18,15 +18,15 @@ cloud_name = (str(config['cloud_name']))
 
 def getDateTime():
     dateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    print('\n\033[39m Time:\t\t ', end = ' ')
-    print('\033[39m' + dateTime, end = '')
+    print('\n Time:\t\t ', end = ' ')
+    print(dateTime, end = '')
 
 def getUpTime():
     upTime = subprocess.Popen('uptime -s', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     timeUp = os.popen("awk '{print $1}' /proc/uptime").readline()
     seconds = str(round(float(timeUp)))
-    print('\n\033[95m RPI start:      ', end = ' ')
-    print('\033[95m' + upTime, end = '')
+    print('\n RPI start:      ', end = ' ')
+    print(upTime, end = '')
     print(' Uptime:\t  ' + str(timedelta(seconds = int(seconds))))
 
 def getSystemInfo():
@@ -35,30 +35,30 @@ def getSystemInfo():
     temperature = 'Temperature:\t  ' + subprocess.Popen('vcgencmd measure_temp', shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
     
     throttledCode = throttled.split('=')[1].replace('\n', '')
-    print(' \033[36m' + throttledCode + ':\t\t ', end = '')
+    print(throttledCode + ':\t\t ', end = '')
     if throttledCode == '0x0':
-        print(' \033[32mSystem stable')
+        print(' System stable')
     elif throttledCode == '0x1':
-        print(' \033[31mUnder-voltage detected')
+        print(' Under-voltage detected')
     elif throttledCode == '0x2':
-        print(' \033[31mArm frequency capped')
+        print(' Arm frequency capped')
     elif throttledCode == '0x4':
-        print(' \033[31mCurrently throttled')
+        print(' Currently throttled')
     elif throttledCode == '0x8':
-        print(' \033[31mSoft temperature limit active')
+        print(' Soft temperature limit active')
     elif throttledCode == '0x10000':
-        print(' \033[31mUnder-voltage has occurred')
+        print(' Under-voltage has occurred')
     elif throttledCode == '0x20000':
-        print(' \033[31mArm frequency capping has occurred')
+        print(' Arm frequency capping has occurred')
     elif throttledCode == '0x40000':
-        print(' \033[31mThrottling has occurred')
+        print(' Throttling has occurred')
     elif throttledCode == '0x80000':
-        print(' \033[31mSoft temperature limit has occurred')
+        print(' Soft temperature limit has occurred')
     else:
-        print(' \033[31mError')
+        print('Error')
 
-    print('\033[36m Camera:\t  ' + cameraInfo, end = '')
-    print(' \033[36m' + temperature, end = '')
+    print('Camera:\t\t  ' + cameraInfo, end = '')
+    print(temperature, end = '')
 
 def set_camera_options(camera):
     # Set camera resolution.
@@ -103,7 +103,8 @@ def add_timestamp():
 # Upload picture(s) on cloud (Requires rclone)
 def sync_cloud():
     print("\nuploading on " + str(cloud_name) + "...")
-    os.system('rclone copy ' + str(dir_path) + ' ' + str(cloud_name) + ':' + str(cloud_dir))
+    cloud = subprocess.Popen('sudo rclone copy ' + str(dir_path) + ' ' + str(cloud_name) + ':' + str(cloud_dir), shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    print(cloud)
 
 def capture_image():
     try:
@@ -134,10 +135,10 @@ def capture_image():
             if config['upload_cloud']:
                 sync_cloud()
             if config['auto_shutdown']:
-                print('\n\033[33mSystem Shutdown...', end = '')
+                print('\nSystem Shutdown...', end = '')
                 getDateTime()
                 os.system('gpio -g mode 4 out')
-            print("\033[93m=====================================================")
+            print("=====================================================")
             sys.exit()
     except (KeyboardInterrupt):
         print ("\nTime-lapse capture cancelled.\n")
@@ -151,7 +152,7 @@ getUpTime()
 getDateTime()
 
 # Kick off the capture process
-print('\033[32m Take Picture' + ('s' if config['total_images'] > 1 else '') + ':')
+print(' Take Picture' + ('s' if config['total_images'] > 1 else '') + ':')
 capture_image()
 
 
