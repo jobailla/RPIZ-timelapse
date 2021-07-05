@@ -18,46 +18,47 @@ cloud_name = (str(config['cloud_name']))
 
 def getDateTime():
     dateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    print('\n Time:\t\t ', end = ' ')
-    print(dateTime, end = '')
+    print('------------- ' + dateTime.strip('\n') + ' -------------')
 
 def getUpTime():
     upTime = subprocess.Popen('uptime -s', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     timeUp = os.popen("awk '{print $1}' /proc/uptime").readline()
     seconds = str(round(float(timeUp)))
-    print('\n RPI start:      ', end = ' ')
+    print('RPI start:\t ', end = ' ')
     print(upTime, end = '')
-    print(' Uptime:\t  ' + str(timedelta(seconds = int(seconds))))
+    print('Uptime:\t\t  ' + str(timedelta(seconds = int(seconds))))
 
 def getSystemInfo():
     cameraInfo = subprocess.Popen('vcgencmd get_camera', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     throttled = subprocess.Popen('vcgencmd get_throttled', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    temperature = 'Temperature:\t  ' + subprocess.Popen('vcgencmd measure_temp', shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
+    temperature = subprocess.Popen('vcgencmd measure_temp', shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
     
     throttledCode = throttled.split('=')[1].replace('\n', '')
-    print(throttledCode + ':\t\t ', end = '')
+    print(throttledCode + ': ', end = '')
     if throttledCode == '0x0':
-        print(' System stable')
+        print('System stable', end = '')
     elif throttledCode == '0x1':
-        print(' Under-voltage detected')
+        print('Under-voltage detected', end = '')
     elif throttledCode == '0x2':
-        print(' Arm frequency capped')
+        print('Arm frequency capped', end = '')
     elif throttledCode == '0x4':
-        print(' Currently throttled')
+        print('Currently throttled', end = '')
     elif throttledCode == '0x8':
-        print(' Soft temperature limit active')
+        print('Soft temperature limit active', end = '')
     elif throttledCode == '0x10000':
-        print(' Under-voltage has occurred')
+        print('Under-voltage has occurred', end = '')
     elif throttledCode == '0x20000':
-        print(' Arm frequency capping has occurred')
+        print('Arm frequency capping has occurred', end = '')
     elif throttledCode == '0x40000':
-        print(' Throttling has occurred')
+        print('Throttling has occurred', end = '')
     elif throttledCode == '0x80000':
-        print(' Soft temperature limit has occurred')
+        print('Soft temperature limit has occurred', end = '')
     else:
         print('Error')
 
-    print('Camera:\t\t  ' + cameraInfo, end = '')
+    print(' / ', end = '')
+    print('Cam: ' + cameraInfo.strip('\n'), end = '')
+    print(' / ', end = '')
     print(temperature, end = '')
 
 def set_camera_options(camera):
@@ -103,8 +104,10 @@ def add_timestamp():
 # Upload picture(s) on cloud (Requires rclone)
 def sync_cloud():
     print("\nuploading on " + str(cloud_name) + "...")
-    cloud = subprocess.Popen('sudo rclone copy ' + str(dir_path) + ' ' + str(cloud_name) + ':' + str(cloud_dir), shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    print(cloud)
+    os.system('sudo rclone copy ' + str(dir_path) + ' ' + str(cloud_name) + ':' + str(cloud_dir))
+    os.system('sudo rclone copy /home/pi/logs/timelapse.log onedrive:/Timelapse/Pictures/logs')
+    os.system('sudo rclone copy /home/pi/wittyPi/schedule.log onedrive:/Timelapse/Pictures/logs')
+    os.system('sudo rclone copy /home/pi/wittyPi/wittyPi.log onedrive:/Timelapse/Pictures/logs')
 
 def capture_image():
     try:
@@ -124,7 +127,7 @@ def capture_image():
         camera.capture(str(dir_path) + image_name)
         camera.close()
         image_list.append(image_name)
-        print('\t\t  ' + image_name.replace('.jpg', ''))
+        print(image_name.replace('.jpg', ''))
        
         if (image_number < (config['total_images'] - 1)):
             image_number += 1
@@ -134,26 +137,23 @@ def capture_image():
             # sync cloud
             if config['upload_cloud']:
                 sync_cloud()
-            if config['auto_shutdown']:
-                print('\nSystem Shutdown...', end = '')
-                getDateTime()
-                os.system('gpio -g mode 4 out')
-            print("=====================================================")
-            sys.exit()
+            getDateTime()
+            print('---------------------------------------------------------')
     except (KeyboardInterrupt):
         print ("\nTime-lapse capture cancelled.\n")
         sys.exit()
     except (SystemExit):
         sys.exit()
 
-# Print logs
-getSystemInfo()
-getUpTime()
-getDateTime()
-
-# Kick off the capture process
-print(' Take Picture' + ('s' if config['total_images'] > 1 else '') + ':')
-capture_image()
+if __name__ == "__main__":
+    # Print logs
+    getDateTime()
+    getSystemInfo()
+    getUpTime()
+    # Kick off the capture process
+    print('Take Picture' + ('s' if config['total_images'] > 1 else '') + ':\t  ' , end = '')
+    capture_image()
+    sys.exit()
 
 
 # Create an animated gif (Requires ImageMagick)
