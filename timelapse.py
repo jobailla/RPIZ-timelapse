@@ -103,11 +103,8 @@ def add_timestamp():
 
 # Upload picture(s) on cloud (Requires rclone)
 def sync_cloud():
-    print("\nuploading on " + str(cloud_name) + "...")
+    print("uploading on " + str(cloud_name) + "...")
     os.system('sudo rclone copy ' + str(dir_path) + ' ' + str(cloud_name) + ':' + str(cloud_dir))
-    os.system('sudo rclone copy /home/pi/logs/timelapse.log onedrive:/Timelapse/Pictures/logs')
-    os.system('sudo rclone copy /home/pi/wittyPi/schedule.log onedrive:/Timelapse/Pictures/logs')
-    os.system('sudo rclone copy /home/pi/wittyPi/wittyPi.log onedrive:/Timelapse/Pictures/logs')
 
 def capture_image():
     try:

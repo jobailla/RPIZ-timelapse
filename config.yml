@@ -19,21 +19,19 @@ interval: 1
 # Advanced settings #
 #####################
 
-auto_shutdown: True
-
 # Whether to create an animated gif after capturing the time-lapse images.
-create_gif: False
+create_gif: false
 
 # Whether to create an video after capturing the time-lapse images.
-create_video: False
+create_video: false
 
 # Add date and hour for each images
-add_timestamp: False
+add_timestamp: false
 
 # Setup auto upload pictures on cloud (need rclone)
-upload_cloud: False
+upload_cloud: false
 cloud_name: onedrive
-cloud_dir: /Timelapse/TimelapsePictures
+cloud_dir: Timelapse/Pictures
 
 # ISO value. 0 = auto, 60-800 for manual ISO.
 iso: 0
