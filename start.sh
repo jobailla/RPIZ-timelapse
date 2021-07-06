@@ -12,7 +12,7 @@ if [ $cam != 0 ]; then
 	sudo rclone copy /home/pi/logs/timelapse.log onedrive:/Timelapse/Pictures/logs
 	sudo rclone copy /home/pi/wittyPi/schedule.log onedrive:/Timelapse/Pictures/logs
 	sudo rclone copy /home/pi/wittyPi/wittyPi.log onedrive:/Timelapse/Pictures/logs
-#	gpio -g mode 4 out
+	gpio -g mode 4 out
 else
 	echo 'Camera not found'
 fi

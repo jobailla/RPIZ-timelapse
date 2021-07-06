@@ -142,6 +142,16 @@ def capture_image():
     except (SystemExit):
         sys.exit()
 
+# Create an animated gif (Requires ImageMagick)
+def create_gif():
+    print ('\nCreating animated gif.\n')
+    os.system('convert -delay 10 -loop 0 ' + dir + '/image*.jpg ' + dir + '-timelapse.gif')
+
+# Create a video (Requires avconv)
+def create_video():
+    print ('\nCreating video.\n')
+    os.system('avconv -framerate 20 -i ' + dir + '/image%08d.jpg -vf format=yuv420p ' + dir + '/timelapse.mp4')
+
 if __name__ == "__main__":
     # Print logs
     getDateTime()
@@ -150,15 +160,8 @@ if __name__ == "__main__":
     # Kick off the capture process
     print('Take Picture' + ('s' if config['total_images'] > 1 else '') + ':\t  ' , end = '')
     capture_image()
+    if config['create_gif']:
+        create_gif()
+    if config['create_video']:
+        create_video()
     sys.exit()
-
-
-# Create an animated gif (Requires ImageMagick)
-if config['create_gif']:
-    print ('\nCreating animated gif.\n')
-    os.system('convert -delay 10 -loop 0 ' + dir + '/image*.jpg ' + dir + '-timelapse.gif')
-
-# Create a video (Requires avconv)
-if config['create_video']:
-    print ('\nCreating video.\n')
-    os.system('avconv -framerate 20 -i ' + dir + '/image%08d.jpg -vf format=yuv420p ' + dir + '/timelapse.mp4')

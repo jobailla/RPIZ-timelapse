@@ -92,10 +92,9 @@ then
 else
 	echo -e "\e[33mwittyPi folder already exists\e[0m"
 fi
-# set extraTasks
-echo -e "\e[33mAdd witty extraTasks... \e[0m"
 mkdir /home/pi/logs
-echo "sudo python3 /home/pi/RPIZ-timelapse/timelapse.py >> /home/pi/logs/log.txt 2>&1" >> /home/pi/wittyPi/extraTasks.sh
+# set crontab
+( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot sudo sh /home/pi/RPIZ-timelapse/start.sh") | sort - | uniq - | crontab - -u pi
 # Alias
 echo -e "\e[33mSet alias...\e[0m"
 echo "alias timelapse=\"sudo python3 /home/pi/RPIZ-timelapse/timelapse.py\"" >>  ~/.bashrc
