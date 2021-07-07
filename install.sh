@@ -8,7 +8,7 @@ echo -e "\e[33mSystem Update... \e[0m"
 sudo apt-get update -y
 echo -e "\e[33mCurrent linux version:\e[0m"
 uname -a
-sudo apt-get install upgrade -y
+sudo apt-get upgrade -y
 echo -e "\e[33mInstalling Dependencies... \e[0m"
 sudo apt-get install -y git vim dialog python3-picamera python-yaml python3-pip
 read -rp "Do you want install optionials dependencies ? (proftpd, imagemagick, rclone) ? (y/n) " yn
