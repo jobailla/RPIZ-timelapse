@@ -54,7 +54,7 @@ def getSystemInfo():
     elif throttledCode == '0x80000':
         print('Soft temperature limit has occurred', end = '')
     else:
-        print('Error')
+        print('Error', end = '')
 
     print(' / ', end = '')
     print('Cam: ' + cameraInfo.strip('\n'), end = '')
