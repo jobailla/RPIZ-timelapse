@@ -92,7 +92,10 @@ then
 else
 	echo -e "\e[33mwittyPi folder already exists\e[0m"
 fi
-mkdir /home/pi/logs
+sudo mkdir /boot/timelapse/Pictures
+sudo mkdir /boot/timelapse/logs
+cd
+ln -s /boot/timelapse
 # set crontab
 ( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot sudo sh /home/pi/RPIZ-timelapse/start.sh") | sort - | uniq - | crontab - -u pi
 # Alias
