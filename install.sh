@@ -93,11 +93,9 @@ else
 	echo -e "\e[33mwittyPi folder already exists\e[0m"
 fi
 sudo mkdir /boot/timelapse/Pictures
-sudo mkdir /boot/timelapse/logs
+sudo mkdir /home/pi/logs
 cd
 ln -s /boot/timelapse
-# set crontab
-( (crontab -l -u pi 2>/dev/null || echo "") ; echo "@reboot sudo sh /home/pi/RPIZ-timelapse/start.sh") | sort - | uniq - | crontab - -u pi
 # Alias
 echo -e "\e[33mSet alias...\e[0m"
 echo "alias timelapse=\"sudo python3 /home/pi/RPIZ-timelapse/timelapse.py\"" >>  ~/.bashrc

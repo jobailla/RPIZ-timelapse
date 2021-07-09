@@ -48,4 +48,4 @@ white_balance: { }
 rotation: 0
 
 # Select the path, where the files will be saved. (default in same directory as executable)
-dir_path: /boot/Pictures/
+dir_path: /home/pi/timelapse/Pictures/
