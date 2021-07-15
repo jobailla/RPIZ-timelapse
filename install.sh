@@ -92,10 +92,13 @@ then
 else
 	echo -e "\e[33mwittyPi folder already exists\e[0m"
 fi
+sudo mkdir /boot/timelapse
 sudo mkdir /boot/timelapse/Pictures
 sudo mkdir /home/pi/logs
 cd
 ln -s /boot/timelapse
+cp /home/pi/RPIZ-timelapse/timelapse.wpi home/pi/wittyPi/schedules/
+cp /home/pi/RPIZ-timelapse/timelapse/extraTasks.sh home/pi/wittyPi/extraTasks.sh
 # Alias
 echo -e "\e[33mSet alias...\e[0m"
 echo "alias timelapse=\"sudo python3 /home/pi/RPIZ-timelapse/timelapse.py\"" >>  ~/.bashrc
