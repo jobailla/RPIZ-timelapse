@@ -22,8 +22,8 @@ sudo ./runScript.sh
 
 sudo python3 /home/pi/RPIZ-timelapse/timelapse.py >> /home/pi/logs/timelapse.log 2>&1
 
-#if [ $cam != 0 ]; then
-	#       gpio -g mode 4 out
-#else
-#	echo 'Camera not found'
-#fi
+if [ $cam != 0 ]; then
+	gpio -g mode 4 out
+else
+	echo 'Camera not found'
+fi
