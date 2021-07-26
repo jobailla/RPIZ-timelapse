@@ -15,6 +15,7 @@ image_list = []
 dir_path = (str(config['dir_path']))
 cloud_dir = (str(config['cloud_dir']))
 cloud_name = (str(config['cloud_name']))
+wittyPath = "/home/pi/wittyPi/"
 
 def getDateTime():
     dateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
@@ -60,6 +61,21 @@ def getSystemInfo():
     print('Cam: ' + cameraInfo.strip('\n'), end = '')
     print(' / ', end = '')
     print(temperature, end = '')
+
+def set_schedule():
+    scheduleTime = subprocess.Popen('date +%H:%M', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    
+    if scheduleTime >= "21:00" and scheduleTime < "7:00":
+        scheduleFile = "night.wpi"
+    else:
+        scheduleFile = "day.wpi"
+
+    os.system("sudo rm -f " + wittyPath + "schedule.wpi")
+    os.system("cp " + wittyPath + "schedules/" + scheduleFile + " " + wittyPath)
+    os.system("mv " + wittyPath + scheduleFile + " " + wittyPath + "schedule.wpi")
+    #os.system("sudo ./run.sh" + " | sudo tee -a " + wittyPath + "schedule.log")
+    subprocess.call("sudo sh /home/pi/RPIZ-timelapse/run.sh", shell=True)
+
 
 def set_camera_options(camera):
     # Set camera resolution.
@@ -135,7 +151,7 @@ def capture_image():
             if config['upload_cloud']:
                 sync_cloud()
             getDateTime()
-            print('---------------------------------------------------------')
+            print('=========================================================')
     except (KeyboardInterrupt):
         print ("\nTime-lapse capture cancelled.\n")
         sys.exit()
@@ -157,6 +173,7 @@ if __name__ == "__main__":
     getDateTime()
     getSystemInfo()
     getUpTime()
+    set_schedule()
     # Kick off the capture process
     print('Take Picture' + ('s' if config['total_images'] > 1 else '') + ':\t  ' , end = '')
     capture_image()
@@ -164,4 +181,8 @@ if __name__ == "__main__":
         create_gif()
     if config['create_video']:
         create_video()
+    if config['auto_shutdown']:
+        print('\n\033[92m \033[4mSystem Shutdown:\033[24m', end = ' ')
+        getDateTime()
+        os.system('gpio -g mode 4 out')
     sys.exit()
