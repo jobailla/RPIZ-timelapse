@@ -18,8 +18,9 @@ cloud_name = (str(config['cloud_name']))
 wittyPath = "/home/pi/wittyPi/"
 
 def getDateTime():
-    dateTime = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    print('------------- ' + dateTime.strip('\n') + ' -------------')
+    date = datetime.now().strftime("%Y-%m-%d")
+    time = datetime.now().strftime("%H:%M:%S")
+    print('------------- ' + date + ' ' + time + ' -------------')
 
 def getUpTime():
     upTime = subprocess.Popen('uptime -s', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
@@ -166,6 +167,7 @@ def create_video():
     print ('\nCreating video.\n')
     os.system('avconv -framerate 20 -i ' + dir + '/image%08d.jpg -vf format=yuv420p ' + dir + '/timelapse.mp4')
 
+# Main function
 if __name__ == "__main__":
     # Print logs
     getDateTime()
