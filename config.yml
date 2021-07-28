@@ -3,6 +3,9 @@
 # Basic Settings #
 ##################
 
+# Select the path, where the files will be saved. (default in same directory as executable)
+dir_path: /home/pi/Pictures/
+
 # Image resolution Set to empty object (`{ }`) to use default resolution.
 resolution: { 
   width: 2560,
@@ -17,7 +20,7 @@ interval: 1
 
 # night range
 night: {
-  start: "21:00"
+  start: "21:00",
   end: "07:00"
 }
 
@@ -55,5 +58,3 @@ white_balance: { }
 # Rotate the images taken by the camera. Possible value are 0, 90, 180 or 270
 rotation: 0
 
-# Select the path, where the files will be saved. (default in same directory as executable)
-dir_path: /home/pi/timelapse/Pictures/

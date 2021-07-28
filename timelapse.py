@@ -22,7 +22,7 @@ timelapsePath = "/home/pi/RPIZ-timelapse/"
 def getDateTime():
     date = datetime.now().strftime("%Y-%m-%d")
     time = datetime.now().strftime("%H:%M:%S")
-    print('------------- ' + date + ' ' + time + ' -------------')
+    print('*************** ' + date + ' ' + time + ' ***************')
 
 def getUpTime():
     upTime = subprocess.Popen('uptime -s', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
@@ -48,22 +48,22 @@ def getSystemInfo():
         19: 'Soft temperature limit has occurred '
     }
 
-    throttled_output = subprocess.check_output(GET_THROTTLED_CMD, shell=True)
+    throttled_output = subprocess.Popen(GET_THROTTLED_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     throttled_binary = bin(int(throttled_output.split('=')[1], 0))
 
     warnings = 0
 
-    for position, message in MESSAGES.iteritems():
+    for position, message in MESSAGES.items():
         # Check for the binary digits to be "on" for each warning message
         if len(throttled_binary) > position and throttled_binary[0 - position - 1] == '1':
             warnings += 1
 
     if warnings == 0:
-        print("System Stable")
+        print("System Stable", end='')
     else:
-        print("Error: " + message)
+        print("Error: " + message, end='')
 
-    cameraInfo = subprocess.Popen(GET_CAMERA_INFO_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    cameraInfo = subprocess.Popen(GET_CAMERA_INFOS_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     print(' / ', end = '')
     print('Cam: ' + cameraInfo.strip('\n'), end = '')
     print(' / ', end = '')
@@ -82,7 +82,7 @@ def set_schedule():
     os.system("sudo rm -f " + wittyPath + "schedule.wpi")
     os.system("cp " + wittyPath + "schedules/" + scheduleFile + " " + wittyPath)
     os.system("mv " + wittyPath + scheduleFile + " " + wittyPath + "schedule.wpi")
-    subprocess.call("sudo sh " + timelpasePath + "run.sh", shell=True)
+    subprocess.call("sudo sh " + timelapsePath + "run.sh", shell=True)
 
 def set_camera_options(camera):
     # Set camera resolution.
@@ -158,7 +158,7 @@ def capture_image():
             if config['upload_cloud']:
                 sync_cloud()
             getDateTime()
-            print('=========================================================\n')
+            print('===================================================\n')
     except (KeyboardInterrupt):
         print ("\nTime-lapse capture cancelled.\n")
         sys.exit()
