@@ -15,7 +15,9 @@ image_list = []
 dir_path = (str(config['dir_path']))
 cloud_dir = (str(config['cloud_dir']))
 cloud_name = (str(config['cloud_name']))
+
 wittyPath = "/home/pi/wittyPi/"
+timelapsePath = "/home/pi/RPIZ-timelapse/"
 
 def getDateTime():
     date = datetime.now().strftime("%Y-%m-%d")
@@ -30,43 +32,49 @@ def getUpTime():
     print(upTime, end = '')
     print('Uptime:\t\t  ' + str(timedelta(seconds = int(seconds))))
 
-def getSystemInfo():
-    cameraInfo = subprocess.Popen('vcgencmd get_camera', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    throttled = subprocess.Popen('vcgencmd get_throttled', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    temperature = subprocess.Popen('vcgencmd measure_temp', shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
-    
-    throttledCode = throttled.split('=')[1].replace('\n', '')
-    print(throttledCode + ': ', end = '')
-    if throttledCode == '0x0':
-        print('System stable', end = '')
-    elif throttledCode == '0x1':
-        print('Under-voltage detected', end = '')
-    elif throttledCode == '0x2':
-        print('Arm frequency capped', end = '')
-    elif throttledCode == '0x4':
-        print('Currently throttled', end = '')
-    elif throttledCode == '0x8':
-        print('Soft temperature limit active', end = '')
-    elif throttledCode == '0x10000':
-        print('Under-voltage has occurred', end = '')
-    elif throttledCode == '0x20000':
-        print('Arm frequency capping has occurred', end = '')
-    elif throttledCode == '0x40000':
-        print('Throttling has occurred', end = '')
-    elif throttledCode == '0x80000':
-        print('Soft temperature limit has occurred', end = '')
-    else:
-        print('Error', end = '')
+def getSystemInfo(): 
+    GET_THROTTLED_CMD = 'vcgencmd get_throttled'
+    GET_CAMERA_INFOS_CMD = 'vcgencmd get_camera'
+    GET_TEMPERATURE_CMD = 'vcgencmd measure_temp'
 
+    MESSAGES = {
+        0: 'Under-voltage! ',
+        1: 'ARM frequency capped! ',
+        2: 'Currently throttled! ',
+        3: 'Soft temperature limit active ',
+        16: 'Under-voltage has occurred since last reboot. ',
+        17: 'Throttling has occurred since last reboot. ',
+        18: 'ARM frequency capped has occurred since last reboot. ',
+        19: 'Soft temperature limit has occurred '
+    }
+
+    throttled_output = subprocess.check_output(GET_THROTTLED_CMD, shell=True)
+    throttled_binary = bin(int(throttled_output.split('=')[1], 0))
+
+    warnings = 0
+
+    for position, message in MESSAGES.iteritems():
+        # Check for the binary digits to be "on" for each warning message
+        if len(throttled_binary) > position and throttled_binary[0 - position - 1] == '1':
+            warnings += 1
+
+    if warnings == 0:
+        print("System Stable")
+    else:
+        print("Error: " + message)
+
+    cameraInfo = subprocess.Popen(GET_CAMERA_INFO_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     print(' / ', end = '')
     print('Cam: ' + cameraInfo.strip('\n'), end = '')
     print(' / ', end = '')
+    
+    temperature = subprocess.Popen(GET_TEMPERATURE_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
     print(temperature, end = '')
 
 def set_schedule():
     scheduleTime = subprocess.Popen('date +%H:%M', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     
-    if scheduleTime >= "21:00" and scheduleTime < "7:00":
+    if scheduleTime >= config['night']['start'] and scheduleTime < config['night']['end']:
         scheduleFile = "night.wpi"
     else:
         scheduleFile = "day.wpi"
@@ -74,7 +82,7 @@ def set_schedule():
     os.system("sudo rm -f " + wittyPath + "schedule.wpi")
     os.system("cp " + wittyPath + "schedules/" + scheduleFile + " " + wittyPath)
     os.system("mv " + wittyPath + scheduleFile + " " + wittyPath + "schedule.wpi")
-    subprocess.call("sudo sh /home/pi/RPIZ-timelapse/run.sh", shell=True)
+    subprocess.call("sudo sh " + timelpasePath + "run.sh", shell=True)
 
 def set_camera_options(camera):
     # Set camera resolution.
@@ -184,7 +192,5 @@ if __name__ == "__main__":
         create_video()
     # Shutdown
     if config['auto_shutdown']:
-        print('System Shutdown', end = ' ')
-        getDateTime()
         os.system('gpio -g mode 4 out')
     sys.exit()
