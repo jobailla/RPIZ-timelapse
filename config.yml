@@ -18,11 +18,8 @@ total_images: 1
 # The interval between captures (in seconds).
 interval: 1
 
-# night range
-night: {
-  start: "21:00",
-  end: "07:00"
-}
+# night rang
+night: "21:00"
 
 #####################
 # Advanced settings #

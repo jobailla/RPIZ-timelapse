@@ -72,12 +72,18 @@ def getSystemInfo():
     print(temperature, end = '')
 
 def set_schedule():
-    scheduleTime = subprocess.Popen('date +%H:%M', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    t = datetime.now().time()
+    n = datetime.strptime(config['night'], '%H:%M').time()
     
-    if scheduleTime >= config['night']['start'] and scheduleTime < config['night']['end']:
+    time = (t.hour * 60 + t.minute) * 60 + t.second
+    night = (n.hour * 60 + n.minute) * 60 + n.second
+
+    if time >= night:
         scheduleFile = "night.wpi"
+        print('night')
     else:
         scheduleFile = "day.wpi"
+        print('day')
 
     os.system("sudo rm -f " + wittyPath + "schedule.wpi")
     os.system("cp " + wittyPath + "schedules/" + scheduleFile + " " + wittyPath)
