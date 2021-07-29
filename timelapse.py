@@ -80,11 +80,10 @@ def set_schedule():
 
     if time >= night:
         scheduleFile = "night.wpi"
-        print('night')
     else:
         scheduleFile = "day.wpi"
-        print('day')
 
+    print('schedule script:  ' + scheduleFile)
     os.system("sudo rm -f " + wittyPath + "schedule.wpi")
     os.system("cp " + wittyPath + "schedules/" + scheduleFile + " " + wittyPath)
     os.system("mv " + wittyPath + scheduleFile + " " + wittyPath + "schedule.wpi")
@@ -189,7 +188,7 @@ if __name__ == "__main__":
     getUpTime()
     set_schedule()
     # Kick off the capture process
-    print('Take Picture' + ('s' if config['total_images'] > 1 else '') + ':\t  ' , end = '')
+    print('Take Picture' + ('s' if config['total_images'] > 1 else '') + ':\t' , end = '')
     capture_image()
     # Optional actions
     if config['create_gif']:
