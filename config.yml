@@ -18,8 +18,21 @@ total_images: 1
 # The interval between captures (in seconds).
 interval: 1
 
-# night rang
-night: "21:00"
+# reboot interval (in seconds)
+reboot_interval: 600
+on_min: 120
+
+# date range
+date: {
+  start: "2021-07-01",
+  end: "2025-07-01"
+}
+
+# night range
+night: {
+  start: "21:00:00",
+  end: "07:00:00"
+ }
 
 #####################
 # Advanced settings #

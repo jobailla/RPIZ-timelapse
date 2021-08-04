@@ -4,9 +4,11 @@ import os
 import sys
 import threading
 from datetime import datetime, timedelta
+import time
 from time import sleep
 import yaml
 import subprocess
+import math
 
 config = yaml.safe_load(open(os.path.join(sys.path[0], "config.yml")))
 image_number = 0
@@ -71,22 +73,72 @@ def getSystemInfo():
     temperature = subprocess.Popen(GET_TEMPERATURE_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
     print(temperature, end = '')
 
+def calcul_time(date1, date2):
+    date1 = date1.split(':')
+    date2 = date2.split(':')
+    date1 = [int(i) for i in date1]
+    date2 = [int(i) for i in date2]
+    date1 = timedelta(hours=date1[0], minutes=date1[1], seconds=date1[2])
+    date2 = timedelta(hours=date2[0], minutes=date2[1], seconds=date2[2])
+    diff = date2 - date1
+    return diff
+
+def str_to_delta(s):
+    h, m, s = s.split(':')
+    return timedelta(seconds=int(h) * 3600 + int(m) * 60 + int(s))
+
+def delta_to_str(delta):
+    h = delta.seconds//3600
+    m = (delta.seconds-h*3600)//60
+    s = delta.seconds-h*3600-m*60
+    return '{:02d}:{:02d}:{:02d}'.format(h, m, s)
+
 def set_schedule():
-    t = datetime.now().time()
-    n = datetime.strptime(config['night'], '%H:%M').time()
+    time = datetime.now().time()
+    date = datetime.now().date()
     
-    time = (t.hour * 60 + t.minute) * 60 + t.second
-    night = (n.hour * 60 + n.minute) * 60 + n.second
+    time = timedelta(seconds=time.hour * 3600 + time.minute * 60 + time.second)
 
-    if time >= night:
-        scheduleFile = "night.wpi"
+    reboot_interval = config['reboot_interval']
+
+    night_start = config['night']['start']
+    night_end = config['night']['end']
+    
+    date_start = config['date']['start']
+    date_end = config['date']['end']
+    
+    start = str_to_delta(config['night']['start'])
+    end = str_to_delta(config['night']['end'])
+    
+    night_time = calcul_time(night_end, night_start)
+    night_seconds = night_time.seconds
+
+    on_min = config['on_min']
+    print('Schedule:\t  ', end='')
+
+    if time >= start or time <= end:
+        print('NIGHT')
+        date_start =  date + timedelta(days=1)
+        begin = str(date_start) + ' ' + str(time)
+        end = str(date_end) + ' ' + str(night_end)
+        time_off = (str_to_delta(night_end) - time).seconds - on_min
+        time_on = on_min
     else:
-        scheduleFile = "day.wpi"
+        print('DAY')
+        begin = str(date_start) + ' ' + str(night_end)
+        end = str(date_end) + ' ' + str(night_start)
+        time_off = reboot_interval - on_min
+        time_on = on_min
 
-    print('schedule script:  ' + scheduleFile)
+    scheduleFile = open('schedule.wpi', 'w')
+    scheduleFile.write('BEGIN' + '  ' + begin + '\n')
+    scheduleFile.write('END' + '    ' + end + '\n')
+    scheduleFile.write('ON' + '     ' + 'S' + str(time_on) + ' ' + 'WAIT' + '\n')
+    scheduleFile.write('OFF' + '    ' + 'S' + str(time_off) + '\n')
+    scheduleFile.close()
+
     os.system("sudo rm -f " + wittyPath + "schedule.wpi")
-    os.system("cp " + wittyPath + "schedules/" + scheduleFile + " " + wittyPath)
-    os.system("mv " + wittyPath + scheduleFile + " " + wittyPath + "schedule.wpi")
+    os.system("mv " + timelapsePath + "schedule.wpi" + " " + wittyPath)
     subprocess.call("sudo sh " + timelapsePath + "run.sh", shell=True)
 
 def set_camera_options(camera):
