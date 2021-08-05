@@ -12,9 +12,10 @@ CONFIG = yaml.safe_load(open(os.path.join(sys.path[0], "config.yml")))
 # Variables
 IMAGE_NUMBER = 0
 IMAGE_LIST = []
-REBOOT_INTERVAL = (int(CONFIG['reboot_interval']))
-TOTAL_IMAGES = (int(CONFIG['total_images']))
-CAPTURE_INTERVAL = (int(CONFIG['interval']))
+# Settings
+REBOOT_INTERVAL = CONFIG['reboot_interval']
+TOTAL_IMAGES = CONFIG['total_images']
+CAPTURE_INTERVAL = CONFIG['interval']
 ON_MIN = CONFIG['on_min']
 ANNOTATE_TIME_COLOR = 'yellow'
 BOOL_CREATE_GIF = CONFIG['create_gif']
@@ -26,15 +27,15 @@ BOOL_UPLOAD_CLOUD = CONFIG['upload_cloud']
 PICTURE_NAME_DATETIME_FORMAT = '%Y-%m-%d-%H-%M-%S'
 PICTURE_EXTENSTION = '.jpg'
 # Cloud
-CLOUD_DIR = (str(CONFIG['cloud_dir']))
-CLOUD_NAME = (str(CONFIG['cloud_name']))
+CLOUD_DIR = CONFIG['cloud_dir']
+CLOUD_NAME = CONFIG['cloud_name']
 # Date and time
-DATE_START = (str(CONFIG['date']['start']))
-DATE_END = (str(CONFIG['date']['end']))
-NIGHT_START = (str(CONFIG['night']['start']))
-NIGHT_END = (str(CONFIG['night']['end']))
+DATE_START = CONFIG['date']['start']
+DATE_END = CONFIG['date']['end']
+NIGHT_START = CONFIG['night']['start']
+NIGHT_END = CONFIG['night']['end']
 # Paths
-DIR_PATH = (str(CONFIG['dir_path']))
+DIR_PATH = CONFIG['dir_path']
 WITTY_PATH = "/home/pi/wittyPi/"
 TIMELAPSE_PATH = "/home/pi/RPIZ-timelapse/"
 # Files names
@@ -53,7 +54,7 @@ CAMERA_ROTATION = CONFIG['rotation']
 CAMERA_WIDTH = CAMERA_RESOLUTION['width']
 CAMERA_HEIGHT = CAMERA_RESOLUTION['height']
 CAMERA_ISO = CONFIG['iso']
-CAMERA_SHUTTERSPEED = CONFIG['shutter_speed']
+CAMERA_SHUTTER_SPEED = CONFIG['shutter_speed']
 CAMERA_WHITE_BALANCE = CONFIG['white_balance']
 CAMERA_RED_GAIN = CAMERA_WHITE_BALANCE['red_gain']
 CAMERA_BLUE_GAIN = CAMERA_WHITE_BALANCE['blue_gain']
@@ -172,8 +173,8 @@ def set_camera_options(camera):
     if CAMERA_ISO:
         camera.iso = CAMERA_ISO
     # Set shutter speed.
-    if CAMERA_SHUTTERSPEED:
-        camera.shutter_speed = CAMERA_SHUTTERSPEED
+    if CAMERA_SHUTTER_SPEED:
+        camera.shutter_speed = CAMERA_SHUTTER_SPEED
         # Sleep to allow the shutter speed to take effect correctly.
         sleep(1)
         camera.exposure_mode = 'off'
@@ -209,7 +210,6 @@ def capture_image():
         # picture is taken.
         if (IMAGE_NUMBER < TOTAL_IMAGES - 1):
             thread = threading.Timer(CAPTURE_INTERVAL, capture_image).start()
-
         # Start up the camera.
         camera = PiCamera()
         set_camera_options(camera)
