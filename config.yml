@@ -5,29 +5,23 @@
 
 # Select the path, where the files will be saved. (default in same directory as executable)
 dir_path: /home/pi/Pictures/
-
 # Image resolution Set to empty object (`{ }`) to use default resolution.
 resolution: { 
   width: 2560,
   height: 1440
 }
-
 # The number of images to capture.
 total_images: 1
-
 # The interval between captures (in seconds).
 interval: 1
-
 # reboot interval (in seconds)
 reboot_interval: 600
 on_min: 120
-
 # date range
 date: {
   start: "2021-04-01",
   end: "2031-04-01"
 }
-
 # night range
 night: {
   start: "21:00:00",
@@ -37,34 +31,26 @@ night: {
 #####################
 # Advanced settings #
 #####################
-
-auto_shutdown: true
-
+auto_shutdown: false
 # Whether to create an animated gif after capturing the time-lapse images.
 create_gif: false
-
 # Whether to create an video after capturing the time-lapse images.
 create_video: false
-
 # Add date and hour for each images
 add_timestamp: false
-
 # Setup auto upload pictures on cloud (need rclone)
 upload_cloud: false
 cloud_name: onedrive
 cloud_dir: Timelapse/Pictures
-
 # ISO value. 0 = auto, 60-800 for manual ISO.
 iso: 0
-
 # Shutter speed. 0 = auto, else value in microseconds (seconds * 1000000).
 shutter_speed: 0
-
 # White balance. Set to empty object (`{ }`) to use auto white balance.
-white_balance: { }
-  # red_gain: 1.3
-  # blue_gain: 1.75
-
+white_balance: { 
+   red_gain: 0,
+   blue_gain: 0
+}
 # Rotate the images taken by the camera. Possible value are 0, 90, 180 or 270
 rotation: 0
 

@@ -52,11 +52,8 @@ CAMERA_RESOLUTION = CONFIG['resolution']
 CAMERA_ROTATION = CONFIG['rotation']
 CAMERA_WIDTH = CAMERA_RESOLUTION['width']
 CAMERA_HEIGHT = CAMERA_RESOLUTION['height']
-CAMERA_FRAMERATE = CONFIG['framerate']
 CAMERA_ISO = CONFIG['iso']
-CAMERA_BRIGHTNESS = CONFIG['brightness']
-CAMERA_CONTRAST = CONFIG['contrast']
-CAMERA_SHUTTERSPEED = CONFIG['shutterspeed']
+CAMERA_SHUTTERSPEED = CONFIG['shutter_speed']
 CAMERA_WHITE_BALANCE = CONFIG['white_balance']
 CAMERA_RED_GAIN = CAMERA_WHITE_BALANCE['red_gain']
 CAMERA_BLUE_GAIN = CAMERA_WHITE_BALANCE['blue_gain']
@@ -82,7 +79,7 @@ def getDateTime():
 
 # Get and print Rapsberry Pi uptime
 def getUpTime():
-    up_time = subprocess.Popen('GET_UPTIME_CMD', shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    up_time = subprocess.Popen(GET_UPTIME_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     up_time_seconds = os.popen(GET_UPTIME_SECONDS_CMD).readline()
     seconds = str(round(float(up_time_seconds)))
     print('RPI start:\t ', end=' ')
