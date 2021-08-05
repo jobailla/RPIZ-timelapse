@@ -128,16 +128,15 @@ def set_schedule():
         time_off = reboot_interval - on_min
         time_on = on_min
 
-    scheduleFile = open('schedule.wpi', 'w')
+    os.system("sudo rm -f " + wittyPath + "schedule.wpi")
+    scheduleFile = open(wittyPath + 'schedule.wpi', 'w')
     scheduleFile.write('BEGIN' + '  ' + begin + '\n')
     scheduleFile.write('END' + '    ' + end + '\n')
-    scheduleFile.write('ON' + '     ' + 'S' +
-                       str(time_on) + ' ' + 'WAIT' + '\n')
+    scheduleFile.write('ON' + '     ' + 'S' + str(time_on) + ' ' + 'WAIT' + '\n')
     scheduleFile.write('OFF' + '    ' + 'S' + str(time_off) + '\n')
     scheduleFile.close()
 
-    os.system("sudo rm -f " + wittyPath + "schedule.wpi")
-    os.system("mv " + timelapsePath + "schedule.wpi" + " " + wittyPath)
+#    os.system("mv " + timelapsePath + "schedule.wpi" + " " + wittyPath)
     subprocess.call("sudo sh " + timelapsePath + "run.sh", shell=True)
 
 

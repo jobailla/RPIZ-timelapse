@@ -24,8 +24,8 @@ on_min: 120
 
 # date range
 date: {
-  start: "2021-07-01",
-  end: "2025-07-01"
+  start: "2021-04-01",
+  end: "2031-04-01"
 }
 
 # night range
@@ -38,7 +38,7 @@ night: {
 # Advanced settings #
 #####################
 
-auto_shutdown: false
+auto_shutdown: true
 
 # Whether to create an animated gif after capturing the time-lapse images.
 create_gif: false
