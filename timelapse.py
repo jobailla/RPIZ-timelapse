@@ -139,7 +139,8 @@ def getTotalCycle():
 def schedule_day(time):
     total_cycle = getTotalCycle()
     current_cycle = getCurrentCycle(time)
-    print('DAY' + ' -> ' + str(current_cycle) + ' / ' + str(total_cycle))
+    cycle_progress = round(((current_cycle * 100) / total_cycle), 1)
+    print('DAY' + ' -> ' + str(cycle_progress) + '% ' + '(' + str(current_cycle) + ' / ' + str(total_cycle) + ' cycles)')
     begin = str(DATE_START) + ' ' + str(NIGHT_END)
     end = str(DATE_END) + ' ' + str(NIGHT_START)
     time_off = REBOOT_INTERVAL - ON_MIN
