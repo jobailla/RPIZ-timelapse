@@ -91,6 +91,8 @@ def getUpTime():
 
 # Get and print Raspberry Pi system info
 def getSystemInfo():
+    cameraInfo = subprocess.Popen(GET_CAMERA_INFOS_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    temperature = subprocess.Popen(GET_TEMPERATURE_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
     throttled_output = subprocess.Popen(GET_THROTTLED_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
     throttled_binary = bin(int(throttled_output.split('=')[1], 0))
     warnings = 0
@@ -104,34 +106,18 @@ def getSystemInfo():
     else:
         print("Error: " + message, end='')
 
-    cameraInfo = subprocess.Popen(GET_CAMERA_INFOS_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
-    print(' / ', end='')
-    print('Cam: ' + cameraInfo.strip('\n'), end='')
-    print(' / ', end='')
-
-    temperature = subprocess.Popen(GET_TEMPERATURE_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
+    print(' / Cam: ' + cameraInfo.strip('\n') + ' / ', end='')
     print(temperature, end='')
 
-def getCurrentCycle(time):
-    now_time = time.strftime('%H:%M:%S')
-    now_time = calcul_time(NIGHT_END, now_time)
-    current_cycle = round((now_time.seconds / REBOOT_INTERVAL), 1)
-    return current_cycle
-
-def getTotalCycle(time):
-    day_time = calcul_time(NIGHT_END, NIGHT_START).seconds
-    total_cycle = math.floor(day_time / REBOOT_INTERVAL)
-    return total_cycle
-
 # Calculate time between two timedelta
-def calcul_time(date1, date2):
-    date1 = date1.split(':')
-    date2 = date2.split(':')
-    date1 = [int(i) for i in date1]
-    date2 = [int(i) for i in date2]
-    date1 = timedelta(hours=date1[0], minutes=date1[1], seconds=date1[2])
-    date2 = timedelta(hours=date2[0], minutes=date2[1], seconds=date2[2])
-    diff = date2 - date1
+def calcul_time(time1, time2):
+    time1 = time1.split(':')
+    time2 = time2.split(':')
+    time1 = [int(i) for i in time1]
+    time2 = [int(i) for i in time2]
+    time1 = timedelta(hours=time1[0], minutes=time1[1], seconds=time1[2])
+    time2 = timedelta(hours=time2[0], minutes=time2[1], seconds=time2[2])
+    diff = time2 - time1
     return diff
 
 # Convert string to timedelta
@@ -139,8 +125,38 @@ def str_to_delta(s):
     h, m, s = s.split(':')
     return timedelta(seconds=int(h) * 3600 + int(m) * 60 + int(s))
 
+def getCurrentCycle(time):
+    now_time = time.strftime('%H:%M:%S')
+    now_time = calcul_time(NIGHT_END, now_time)
+    current_cycle = round((now_time.seconds / REBOOT_INTERVAL), 1)
+    return current_cycle
+
+def getTotalCycle():
+    day_time = calcul_time(NIGHT_END, NIGHT_START).seconds
+    total_cycle = math.floor(day_time / REBOOT_INTERVAL)
+    return total_cycle
+
+def schedule_day(time):
+    total_cycle = getTotalCycle()
+    current_cycle = getCurrentCycle(time)
+    print('DAY' + ' -> ' + str(current_cycle) + ' / ' + str(total_cycle))
+    begin = str(DATE_START) + ' ' + str(NIGHT_END)
+    end = str(DATE_END) + ' ' + str(NIGHT_START)
+    time_off = REBOOT_INTERVAL - ON_MIN
+    time_on = ON_MIN
+    return begin, end, time_off, time_on
+
+def schedule_night(time_delta, date):
+    print('NIGHT')
+    date_start = date + timedelta(days=1)
+    begin = str(date_start) + ' ' + str(time_delta)
+    end = str(DATE_END) + ' ' + str(NIGHT_END)
+    time_off = (str_to_delta(NIGHT_END) - time_delta).seconds - ON_MIN
+    time_on = ON_MIN
+    return begin, end, time_off, time_on
+
 # Create schedule file
-def write_schedule(end, begin, time_off, time_on):
+def write_schedule(begin, end, time_off, time_on):
     scheduleFile = open(WITTY_PATH + SCHEDULE_FILE, 'w')
     scheduleFile.write('BEGIN' + '  ' + begin + '\n')
     scheduleFile.write('END' + '    ' + end + '\n')
@@ -159,24 +175,12 @@ def set_schedule():
     print('Schedule:\t  ', end='')
 
     if time_delta >= start or time_delta <= end:
-        print('NIGHT')
-        date_start = date + timedelta(days=1)
-        begin = str(date_start) + ' ' + str(time_delta)
-        end = str(DATE_END) + ' ' + str(NIGHT_END)
-        time_off = (str_to_delta(NIGHT_END) - time_delta).seconds - ON_MIN
-        time_on = ON_MIN
+        begin, end, time_off, time_on = schedule_night(time_delta, date)
     else:
-        total_cycle = getTotalCycle(time)
-        current_cycle = getCurrentCycle(time)
-        print('DAY' + ' -> ' + str(current_cycle) + ' / ' + str(total_cycle))
-        begin = str(DATE_START) + ' ' + str(NIGHT_END)
-        end = str(DATE_END) + ' ' + str(NIGHT_START)
-        time_off = REBOOT_INTERVAL - ON_MIN
-        time_on = ON_MIN
+        begin, end, time_off, time_on = schedule_day(time)
 
     os.system("sudo rm -f " + WITTY_PATH + SCHEDULE_FILE)
-    write_schedule(end, begin, time_off, time_on)
-
+    write_schedule(begin, end, time_off, time_on)
     subprocess.call("sudo sh " + TIMELAPSE_PATH + WITTY_RUN_SCHEDULE_FILE, shell=True)
 
 # Camera configuration
@@ -211,6 +215,17 @@ def annotate_image():
         print("add timestamp: " + image)
         os.system('convert ' + (DIR_PATH + image + '  -pointsize 42 -fill ' + ANNOTATE_TIME_COLOR + ' -annotate +100+100 ' +
                   timestamp + ' ' + str(DIR_PATH) + image))
+
+# Create an animated gif (Requires ImageMagick)
+def create_gif():
+    print('\nCreating animated gif.\n')
+    os.system('convert -delay 10 -loop 0 ' + dir +
+              '/image*.jpg ' + dir + '-timelapse.gif')
+
+# Create a video (Requires avconv)
+def create_video():
+    print('\nCreating video.\n')
+    os.system('avconv -framerate 20 -i ' + dir + '/image%08d.jpg -vf format=yuv420p ' + dir + '/timelapse.mp4')
 
 # Upload picture(s) on cloud (Requires rclone)
 def sync_cloud():
@@ -250,17 +265,6 @@ def capture_image():
         sys.exit()
     except (SystemExit):
         sys.exit()
-
-# Create an animated gif (Requires ImageMagick)
-def create_gif():
-    print('\nCreating animated gif.\n')
-    os.system('convert -delay 10 -loop 0 ' + dir +
-              '/image*.jpg ' + dir + '-timelapse.gif')
-
-# Create a video (Requires avconv)
-def create_video():
-    print('\nCreating video.\n')
-    os.system('avconv -framerate 20 -i ' + dir + '/image%08d.jpg -vf format=yuv420p ' + dir + '/timelapse.mp4')
 
 # Main function
 if __name__ == "__main__":
