@@ -18,6 +18,7 @@ TOTAL_IMAGES = CONFIG['total_images']
 CAPTURE_INTERVAL = CONFIG['interval']
 ON_MIN = CONFIG['on_min']
 ANNOTATE_TIME_COLOR = 'yellow'
+# Boolean
 BOOL_CREATE_GIF = CONFIG['create_gif']
 BOOL_CREATE_VIDEO = CONFIG['create_video']
 BOOL_AUTO_SHUTDOWN = CONFIG['auto_shutdown']
@@ -110,6 +111,17 @@ def getSystemInfo():
     temperature = subprocess.Popen(GET_TEMPERATURE_CMD, shell=True, stdout=subprocess.PIPE).stdout.read().decode().split('=')[1]
     print(temperature, end='')
 
+def getCurrentCycle(time):
+    now_time = time.strftime('%H:%M:%S')
+    now_time = calcul_time(NIGHT_END, now_time)
+    current_cycle = now_time.seconds / REBOOT_INTERVAL
+    return current_cycle
+
+def getTotalCycle(time):
+    day_time = calcul_time(NIGHT_END, NIGHT_START).seconds
+    total_cycle = day_time / REBOOT_INTERVAL
+    return total_cycle
+
 # Calculate time between two timedelta
 def calcul_time(date1, date2):
     date1 = date1.split(':')
@@ -138,7 +150,7 @@ def write_schedule(end, begin, time_off, time_on):
 # Calcul day/night periode, wirte on schedule file and run witty runscript
 def set_schedule():
     time = datetime.now().time()
-    time = timedelta(seconds=time.hour * 3600 + time.minute * 60 + time.second)
+    time = str_to_delta(time)
     date = datetime.now().date()
     start = str_to_delta(NIGHT_START)
     end = str_to_delta(NIGHT_END)
@@ -153,7 +165,9 @@ def set_schedule():
         time_off = (str_to_delta(NIGHT_END) - time).seconds - ON_MIN
         time_on = ON_MIN
     else:
-        print('DAY')
+        total_cycle = getTotalCycle(time)
+        current_cycle = getCurrentCycle(time)
+        print('DAY' + ' -> ' + current_cycle + ' / ' + total_cycle)
         begin = str(DATE_START) + ' ' + str(NIGHT_END)
         end = str(DATE_END) + ' ' + str(NIGHT_START)
         time_off = REBOOT_INTERVAL - ON_MIN
