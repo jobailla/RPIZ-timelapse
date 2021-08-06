@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from time import sleep
 import yaml
 import subprocess
+import math
 
 # Config from yaml file
 CONFIG = yaml.safe_load(open(os.path.join(sys.path[0], "config.yml")))
@@ -114,12 +115,12 @@ def getSystemInfo():
 def getCurrentCycle(time):
     now_time = time.strftime('%H:%M:%S')
     now_time = calcul_time(NIGHT_END, now_time)
-    current_cycle = now_time.seconds / REBOOT_INTERVAL
+    current_cycle = round((now_time.seconds / REBOOT_INTERVAL), 1)
     return current_cycle
 
 def getTotalCycle(time):
     day_time = calcul_time(NIGHT_END, NIGHT_START).seconds
-    total_cycle = day_time / REBOOT_INTERVAL
+    total_cycle = math.floor(day_time / REBOOT_INTERVAL)
     return total_cycle
 
 # Calculate time between two timedelta
@@ -150,24 +151,24 @@ def write_schedule(end, begin, time_off, time_on):
 # Calcul day/night periode, wirte on schedule file and run witty runscript
 def set_schedule():
     time = datetime.now().time()
-    time = str_to_delta(time)
+    time_delta = timedelta(seconds=time.hour * 3600 + time.minute * 60 + time.second)
     date = datetime.now().date()
     start = str_to_delta(NIGHT_START)
     end = str_to_delta(NIGHT_END)
 
     print('Schedule:\t  ', end='')
 
-    if time >= start or time <= end:
+    if time_delta >= start or time_delta <= end:
         print('NIGHT')
         date_start = date + timedelta(days=1)
-        begin = str(date_start) + ' ' + str(time)
+        begin = str(date_start) + ' ' + str(time_delta)
         end = str(DATE_END) + ' ' + str(NIGHT_END)
-        time_off = (str_to_delta(NIGHT_END) - time).seconds - ON_MIN
+        time_off = (str_to_delta(NIGHT_END) - time_delta).seconds - ON_MIN
         time_on = ON_MIN
     else:
         total_cycle = getTotalCycle(time)
         current_cycle = getCurrentCycle(time)
-        print('DAY' + ' -> ' + current_cycle + ' / ' + total_cycle)
+        print('DAY' + ' -> ' + str(current_cycle) + ' / ' + str(total_cycle))
         begin = str(DATE_START) + ' ' + str(NIGHT_END)
         end = str(DATE_END) + ' ' + str(NIGHT_START)
         time_off = REBOOT_INTERVAL - ON_MIN
