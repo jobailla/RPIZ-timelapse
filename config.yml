@@ -31,7 +31,7 @@ night: {
 #####################
 # Advanced settings #
 #####################
-auto_shutdown: false
+auto_shutdown: true
 # Whether to create an animated gif after capturing the time-lapse images.
 create_gif: false
 # Whether to create an video after capturing the time-lapse images.
@@ -47,10 +47,10 @@ iso: 0
 # Shutter speed. 0 = auto, else value in microseconds (seconds * 1000000).
 shutter_speed: 0
 # White balance. Set to empty object (`{ }`) to use auto white balance.
-white_balance: { 
-   red_gain: 0,
-   blue_gain: 0
-}
+white_balance: {} 
+#   red_gain: 0,
+#   blue_gain: 0
+#}
 # Rotate the images taken by the camera. Possible value are 0, 90, 180 or 270
 rotation: 0
 

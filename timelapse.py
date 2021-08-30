@@ -58,8 +58,9 @@ CAMERA_HEIGHT = CAMERA_RESOLUTION['height']
 CAMERA_ISO = CONFIG['iso']
 CAMERA_SHUTTER_SPEED = CONFIG['shutter_speed']
 CAMERA_WHITE_BALANCE = CONFIG['white_balance']
-CAMERA_RED_GAIN = CAMERA_WHITE_BALANCE['red_gain']
-CAMERA_BLUE_GAIN = CAMERA_WHITE_BALANCE['blue_gain']
+if CAMERA_WHITE_BALANCE:
+    CAMERA_RED_GAIN = CAMERA_WHITE_BALANCE['red_gain']
+    CAMERA_BLUE_GAIN = CAMERA_WHITE_BALANCE['blue_gain']
 # Logs messages
 THROTTLED_MESSAGES = {
     0: 'Under-voltage! ',
@@ -149,8 +150,7 @@ def schedule_day(time):
 
 def schedule_night(time_delta, date):
     print('NIGHT')
-    date_start = date + timedelta(days=1)
-    begin = str(date_start) + ' ' + str(time_delta)
+    begin = str(date) + ' ' + str(time_delta)
     end = str(DATE_END) + ' ' + str(NIGHT_END)
     time_off = (str_to_delta(NIGHT_END) - time_delta).seconds - ON_MIN
     time_on = ON_MIN
@@ -199,7 +199,7 @@ def set_camera_options(camera):
         sleep(1)
         camera.exposure_mode = 'off'
     # Set white balance.
-    if CAMERA_WHITE_BALANCE:
+    if CAMERA_WHITE_BALANCE and CAMERA_RED_GAIN and CAMERA_BLUE_GAIN:
         camera.awb_mode = 'off'
         camera.awb_gains = (CAMERA_RED_GAIN, CAMERA_BLUE_GAIN)
     # Set camera rotation
