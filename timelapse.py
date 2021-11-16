@@ -230,9 +230,12 @@ def create_video():
 
 # Upload picture(s) on cloud (Requires rclone)
 def sync_cloud():
-    print("uploading on " + str(CLOUD_NAME) + "...")
-    os.system('sudo rclone copy ' + str(DIR_PATH) + ' ' +
+    print("uploading (move) picture on " + str(CLOUD_NAME) + "...")
+    os.system('rclone move ' + str(DIR_PATH) + ' ' +
               str(CLOUD_NAME) + ':' + str(CLOUD_DIR))
+    print("uploading (sync) logs on " + str(CLOUD_NAME) + "...")
+    os.system('rclone sync ' + "/home/pi/logs" + ' ' +
+              str(CLOUD_NAME) + ':' + str(CLOUD_DIR) + "/logs")
 
 def capture_image():
     try:
